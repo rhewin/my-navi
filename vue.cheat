@@ -1,0 +1,314 @@
+% vue, common
+
+# vue3 create project vite
+npm create vite@latest <project-name>
+cd <project-name>
+npm install
+npm run dev
+
+# vue3 install dependencies
+npm install vue-router pinia axios
+
+# vue3 component skeleton
+<script setup>
+</script>
+
+<template>
+</template>
+
+<style scoped>
+</style>
+
+# vue3 ref state
+import { ref } from "vue"
+
+const count = ref(0)
+
+# vue3 reactive state
+import { reactive } from "vue"
+
+const state = reactive({
+  name: "",
+  age: 0
+})
+
+# vue3 update ref
+count.value++
+
+# vue3 computed
+import { computed } from "vue"
+
+const double = computed(() => count.value * 2)
+
+# vue3 watch ref
+import { watch } from "vue"
+
+watch(count, (newVal, oldVal) => {
+  console.log(newVal)
+})
+
+# vue3 watch multiple
+watch([a, b], ([newA, newB]) => {
+  console.log(newA, newB)
+})
+
+# vue3 watch reactive field
+watch(() => state.name, (value) => {
+  console.log(value)
+})
+
+# vue3 watch immediate
+watch(count, callback, { immediate: true })
+
+# vue3 watch deep
+watch(state, callback, { deep: true })
+
+# vue3 lifecycle mounted
+import { onMounted } from "vue"
+
+onMounted(() => {
+  console.log("mounted")
+})
+
+# vue3 lifecycle updated
+import { onUpdated } from "vue"
+
+onUpdated(() => {
+})
+
+# vue3 lifecycle unmounted
+import { onUnmounted } from "vue"
+
+onUnmounted(() => {
+})
+
+# vue3 lifecycle before mount
+import { onBeforeMount } from "vue"
+
+onBeforeMount(() => {})
+
+# vue3 template ref
+<template>
+  <input ref="input">
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue"
+
+const input = ref(null)
+
+onMounted(() => {
+  input.value.focus()
+})
+</script>
+
+# vue3 v-if
+<div v-if="condition"></div>
+
+# vue3 v-else
+<div v-else></div>
+
+# vue3 v-show
+<div v-show="visible"></div>
+
+# vue3 v-for
+<div v-for="item in items" :key="item.id">
+  {{ item }}
+</div>
+
+# vue3 event click
+<button @click="handleClick"></button>
+
+# vue3 event submit prevent
+<form @submit.prevent="submit"></form>
+
+# vue3 two way binding
+<input v-model="name">
+
+# vue3 bind attribute
+<img :src="image">
+
+# vue3 bind class
+<div :class="{ active: isActive }"></div>
+
+# vue3 bind style
+<div :style="{ color: textColor }"></div>
+
+# vue3 conditional class
+<div :class="[isActive ? 'active' : '']"></div>
+
+# vue3 props define
+<script setup>
+const props = defineProps({
+  title: String,
+  count: Number
+})
+</script>
+
+# vue3 emit event
+<script setup>
+const emit = defineEmits(["submit"])
+
+function submitForm() {
+  emit("submit")
+}
+</script>
+
+# vue3 slot default
+<slot></slot>
+
+# vue3 slot named
+<slot name="header"></slot>
+
+# vue3 slot usage
+<MyComponent>
+  <template #header>
+    Header content
+  </template>
+</MyComponent>
+
+# vue3 provide
+import { provide } from "vue"
+
+provide("message", "hello")
+
+# vue3 inject
+import { inject } from "vue"
+
+const message = inject("message")
+
+# vue3 composable pattern
+import { ref } from "vue"
+
+export function useCounter() {
+  const count = ref(0)
+
+  function inc() {
+    count.value++
+  }
+
+  return { count, inc }
+}
+
+# vue3 router install
+npm install vue-router
+
+# vue3 router create
+import { createRouter, createWebHistory } from "vue-router"
+
+const routes = []
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router
+
+# vue3 router link
+<router-link to="/">Home</router-link>
+
+# vue3 router view
+<router-view/>
+
+# vue3 use router
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+
+router.push("/dashboard")
+
+# vue3 route params
+import { useRoute } from "vue-router"
+
+const route = useRoute()
+
+route.params.id
+
+# vue3 pinia install
+npm install pinia
+
+# vue3 pinia store
+import { defineStore } from "pinia"
+
+export const useStore = defineStore("main", {
+  state: () => ({
+    count: 0
+  })
+})
+
+# vue3 pinia usage
+const store = useStore()
+
+store.count++
+
+# vue3 axios install
+npm install axios
+
+# vue3 axios get
+import axios from "axios"
+
+const res = await axios.get("<url>")
+
+# vue3 fetch api
+const res = await fetch("<url>")
+const data = await res.json()
+
+# vue3 async setup
+<script setup>
+const data = await fetch("/api")
+</script>
+
+# vue3 transition
+<transition name="fade">
+  <div v-if="show"></div>
+</transition>
+
+# vue3 teleport
+<teleport to="body">
+  <div>modal</div>
+</teleport>
+
+# vue3 suspense
+<Suspense>
+  <template #default>
+    <AsyncComponent />
+  </template>
+
+  <template #fallback>
+    Loading...
+  </template>
+</Suspense>
+
+# vue3 custom directive
+app.directive("focus", {
+  mounted(el) {
+    el.focus()
+  }
+})
+
+# vue3 debounce composable
+import { ref } from "vue"
+
+export function useDebounce(value, delay) {
+  const debounced = ref(value)
+
+  setTimeout(() => {
+    debounced.value = value
+  }, delay)
+
+  return debounced
+}
+
+# vue3 local storage composable
+import { ref, watch } from "vue"
+
+export function useLocalStorage(key, value) {
+  const state = ref(localStorage.getItem(key) || value)
+
+  watch(state, v => {
+    localStorage.setItem(key, v)
+  })
+
+  return state
+}
