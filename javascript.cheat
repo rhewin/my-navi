@@ -1,0 +1,28 @@
+% split string
+<string>.split(<delimiter>)
+
+% join array
+<array>.join(<delimiter>)
+
+% map array
+<array>.map(x => x)
+
+% filter array
+<array>.filter(x => x)
+
+% find item
+<array>.find(x => x.id === <id>)
+
+% remove duplicates
+[...new Set(<array>)]
+
+% parse json
+JSON.parse(<json>)
+
+% stringify json
+JSON.stringify(<object>)
+
+% async fetch
+fetch("<url>")
+.then(res => res.json())
+.then(data => console.log(data))

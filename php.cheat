@@ -1,0 +1,23 @@
+% explode string
+explode(<delimiter>, <string>)
+
+% implode array
+implode(<delimiter>, <array>)
+
+% json decode
+json_decode(<json>, true)
+
+% json encode
+json_encode(<data>)
+
+% connect mysql
+$conn = new mysqli(<host>, <user>, <password>, <db>)
+
+% check array key
+array_key_exists(<key>, <array>)
+
+% filter array
+array_filter(<array>, fn($x) => <condition>)
+
+% map array
+array_map(fn($x) => <code>, <array>)

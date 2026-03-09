@@ -1,0 +1,46 @@
+% split string by delimiter
+strings.Split(<string>, <delimiter>)
+
+% join string slice
+strings.Join(<slice>, <delimiter>)
+
+% check substring
+strings.Contains(<string>, <substr>)
+
+% convert string to int
+strconv.Atoi(<string>)
+
+% convert int to string
+strconv.Itoa(<int>)
+
+% substring
+<string>[<start>:<end>]
+
+% json marshal
+json.Marshal(<struct>)
+
+% json unmarshal
+json.Unmarshal(<json>, &<struct>)
+
+% create goroutine
+go func() {
+    <code>
+}()
+
+% mutex lock
+var mu sync.Mutex
+mu.Lock()
+<critical_section>
+mu.Unlock()
+
+% http server
+http.ListenAndServe(":<port>", nil)
+
+% read file
+os.ReadFile(<file>)
+
+% write file
+os.WriteFile(<file>, []byte(<data>), 0644)
+
+% postgres connection
+db, err := sql.Open("postgres", "<dsn>")
