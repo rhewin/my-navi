@@ -1,26 +1,28 @@
-% set key
+% redis, common
+
+# set key
 SET <key> <value>
 
-% get key
+# get key
 GET <key>
 
-% delete key
+# delete key
 DEL <key>
 
-% expire key
+# expire key
 EXPIRE <key> <seconds>
 
-% increment
+# increment
 INCR <key>
 
-% list push
+# list push
 LPUSH <list> <value>
 
-% list pop
+# list pop
 RPOP <list>
 
-% show all keys
+# show all keys
 KEYS *
 
-% redis cli connect
+# redis cli connect
 redis-cli -h <host> -p <port>

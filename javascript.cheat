@@ -1,28 +1,30 @@
-% split string
+% js, common
+
+# split string
 <string>.split(<delimiter>)
 
-% join array
+# join array
 <array>.join(<delimiter>)
 
-% map array
+# map array
 <array>.map(x => x)
 
-% filter array
+# filter array
 <array>.filter(x => x)
 
-% find item
+# find item
 <array>.find(x => x.id === <id>)
 
-% remove duplicates
+# remove duplicates
 [...new Set(<array>)]
 
-% parse json
+# parse json
 JSON.parse(<json>)
 
-% stringify json
+# stringify json
 JSON.stringify(<object>)
 
-% async fetch
+# async fetch
 fetch("<url>")
 .then(res => res.json())
 .then(data => console.log(data))

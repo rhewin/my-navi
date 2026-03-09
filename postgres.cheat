@@ -1,35 +1,37 @@
-% list tables
+% postgres, common
+
+# list tables
 \dt
 
-% describe table
+# describe table
 \d <table>
 
-% create table
+# create table
 CREATE TABLE <table> (
     id SERIAL PRIMARY KEY
 )
 
-% insert
+# insert
 INSERT INTO <table>(<column>)
 VALUES (<value>)
 
-% select
+# select
 SELECT * FROM <table>
 
-% select with condition
+# select with condition
 SELECT * FROM <table>
 WHERE <column> = <value>
 
-% update
+# update
 UPDATE <table>
 SET <column>=<value>
 WHERE <condition>
 
-% delete
+# delete
 DELETE FROM <table>
 WHERE <condition>
 
-% postgres docker
+# postgres docker
 docker run -d \
 -p 5432:5432 \
 -e POSTGRES_PASSWORD=<password> \

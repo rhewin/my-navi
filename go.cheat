@@ -1,46 +1,48 @@
-% split string by delimiter
+% go, common
+
+# split string by delimiter
 strings.Split(<string>, <delimiter>)
 
-% join string slice
+# join string slice
 strings.Join(<slice>, <delimiter>)
 
-% check substring
+# check substring
 strings.Contains(<string>, <substr>)
 
-% convert string to int
+# convert string to int
 strconv.Atoi(<string>)
 
-% convert int to string
+# convert int to string
 strconv.Itoa(<int>)
 
-% substring
+# substring
 <string>[<start>:<end>]
 
-% json marshal
+# json marshal
 json.Marshal(<struct>)
 
-% json unmarshal
+# json unmarshal
 json.Unmarshal(<json>, &<struct>)
 
-% create goroutine
+# create goroutine
 go func() {
     <code>
 }()
 
-% mutex lock
+# mutex lock
 var mu sync.Mutex
 mu.Lock()
 <critical_section>
 mu.Unlock()
 
-% http server
+# http server
 http.ListenAndServe(":<port>", nil)
 
-% read file
+# read file
 os.ReadFile(<file>)
 
-% write file
+# write file
 os.WriteFile(<file>, []byte(<data>), 0644)
 
-% postgres connection
+# postgres connection
 db, err := sql.Open("postgres", "<dsn>")

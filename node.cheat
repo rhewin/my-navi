@@ -1,12 +1,14 @@
-% read file
+% node, common
+
+# read file
 fs.readFile(<file>, 'utf8', (err, data) => {
     console.log(data)
 })
 
-% write file
+# write file
 fs.writeFile(<file>, <data>, err => {})
 
-% express server
+# express server
 const express = require("express")
 const app = express()
 
@@ -16,17 +18,17 @@ app.get("/", (req,res)=>{
 
 app.listen(<port>)
 
-% async function
+# async function
 async function <name>() {
     await <promise>
 }
 
-% environment variable
+# environment variable
 process.env.<VAR>
 
-% import module
+# import module
 const <module> = require("<module>")
 
-% uuid
+# uuid
 const { v4: uuidv4 } = require('uuid')
 uuidv4()

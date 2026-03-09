@@ -1,23 +1,25 @@
-% explode string
+% php, common
+
+# explode string
 explode(<delimiter>, <string>)
 
-% implode array
+# implode array
 implode(<delimiter>, <array>)
 
-% json decode
+# json decode
 json_decode(<json>, true)
 
-% json encode
+# json encode
 json_encode(<data>)
 
-% connect mysql
+# connect mysql
 $conn = new mysqli(<host>, <user>, <password>, <db>)
 
-% check array key
+# check array key
 array_key_exists(<key>, <array>)
 
-% filter array
+# filter array
 array_filter(<array>, fn($x) => <condition>)
 
-% map array
+# map array
 array_map(fn($x) => <code>, <array>)
