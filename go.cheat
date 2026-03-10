@@ -1,22 +1,665 @@
-% go, common
+% golang, go, basics, common
 
-# split string by delimiter
-strings.Split(<string>, <delimiter>)
+; ─────────────────────────────────────────────
+; FOR RANGE LOOPS
+; ─────────────────────────────────────────────
 
-# join string slice
-strings.Join(<slice>, <delimiter>)
+# Go: for range over slice
+for i, v := range <slice> {
+    fmt.Printf("index=%d value=%v\n", i, v)
+}
 
-# check substring
-strings.Contains(<string>, <substr>)
+# Go: for range over map
+for k, v := range <map> {
+    fmt.Printf("key=%s value=%v\n", k, v)
+}
 
-# convert string to int
-strconv.Atoi(<string>)
+# Go: for range over string (runes)
+for i, r := range "<string>" {
+    fmt.Printf("index=%d rune=%c\n", i, r)
+}
 
-# convert int to string
-strconv.Itoa(<int>)
+# Go: for range over channel
+for v := range <channel> {
+    fmt.Println(v)
+}
 
-# substring
+# Go: range with blank identifier (index only)
+for i := range <slice> {
+    fmt.Println(i)
+}
+
+# Go: classic C-style for loop
+for i := 0; i < <n>; i++ {
+    fmt.Println(i)
+}
+
+# Go: infinite loop with break
+for {
+    if <condition> {
+        break
+    }
+}
+
+$ slice: echo "mySlice nums words items"
+$ map: echo "myMap config env headers"
+$ channel: echo "ch jobs results"
+$ string: echo "hello, 世界"
+$ n: echo "10 100 1000"
+$ condition: echo "done err != nil ctx.Done()"
+
+; ─────────────────────────────────────────────
+; SWITCH STATEMENTS
+; ─────────────────────────────────────────────
+
+% golang, go, switch
+
+# Go: switch on value
+switch <variable> {
+case "<val1>":
+    fmt.Println("matched val1")
+case "<val2>", "<val3>":
+    fmt.Println("matched val2 or val3")
+default:
+    fmt.Println("no match")
+}
+
+# Go: switch with no condition (like if-else chain)
+switch {
+case x < 0:
+    fmt.Println("negative")
+case x == 0:
+    fmt.Println("zero")
+default:
+    fmt.Println("positive")
+}
+
+# Go: switch on type (type switch)
+switch v := <iface>.(type) {
+case int:
+    fmt.Printf("int: %d\n", v)
+case string:
+    fmt.Printf("string: %s\n", v)
+case error:
+    fmt.Printf("error: %v\n", v)
+default:
+    fmt.Printf("unknown: %T\n", v)
+}
+
+# Go: switch with fallthrough
+switch <variable> {
+case 1:
+    fmt.Println("one")
+    fallthrough
+case 2:
+    fmt.Println("two or fell through from one")
+default:
+    fmt.Println("other")
+}
+
+$ variable: echo "status code errType val"
+$ iface: echo "i val obj result"
+$ val1: echo "active pending done error"
+$ val2: echo "running stopped"
+$ val3: echo "paused idle"
+
+; ─────────────────────────────────────────────
+; STRING MANIPULATION
+; ─────────────────────────────────────────────
+
+% golang, go, strings
+
+# Go: substring
 <string>[<start>:<end>]
+
+# Go: strings - check contains / prefix / suffix
+strings.Contains("<str>", "<substr>")
+strings.HasPrefix("<str>", "<prefix>")
+strings.HasSuffix("<str>", "<suffix>")
+
+# Go: strings - split and join
+parts := strings.Split("<str>", "<sep>")
+joined := strings.Join(parts, "<sep>")
+
+# Go: strings - trim whitespace / characters
+strings.TrimSpace("  hello  ")
+strings.Trim("<str>", "<cutset>")
+strings.TrimLeft("<str>", "<cutset>")
+strings.TrimRight("<str>", "<cutset>")
+
+# Go: strings - replace
+strings.ReplaceAll("<str>", "<old>", "<new>")
+strings.Replace("<str>", "<old>", "<new>", <n>)  // n=-1 for all
+
+# Go: strings - case conversion
+strings.ToUpper("<str>")
+strings.ToLower("<str>")
+strings.Title("<str>")  // deprecated, use golang.org/x/text
+
+# Go: strings - index / count
+strings.Index("<str>", "<substr>")     // -1 if not found
+strings.Count("<str>", "<substr>")
+
+# Go: strings - builder (efficient concatenation)
+var sb strings.Builder
+for _, s := range <slice> {
+    sb.WriteString(s)
+    sb.WriteByte('\n')
+}
+result := sb.String()
+
+# Go: strings - convert int/float to string
+s := strconv.Itoa(<int>)
+s := fmt.Sprintf("%.2f", <float>)
+s := strconv.FormatFloat(<float>, 'f', 2, 64)
+
+# Go: strings - parse string to int/float
+n, err := strconv.Atoi("<numstr>")
+f, err := strconv.ParseFloat("<numstr>", 64)
+
+# Go: strings - fmt.Sprintf formatting
+s := fmt.Sprintf("name=%-10s age=%03d ratio=%.4f", name, age, ratio)
+
+$ str: echo "hello world foo bar"
+$ substr: echo "world foo"
+$ sep: echo ", / | :"
+$ prefix: echo "http https go"
+$ suffix: echo ".go .json .txt"
+$ cutset: echo "\" \" * /"
+$ old: echo "foo http"
+$ new: echo "bar https"
+$ slice: echo "words lines parts"
+$ int: echo "42 100 0"
+$ float: echo "3.14 2.718 1.0"
+$ numstr: echo "42 3.14 100"
+
+; ─────────────────────────────────────────────
+; FILTER SLICE DATA
+; ─────────────────────────────────────────────
+
+% golang, go, slice, filter
+
+# Go: filter slice - generic pattern (Go 1.18+ generics)
+func Filter[T any](s []T, fn func(T) bool) []T {
+    out := make([]T, 0, len(s))
+    for _, v := range s {
+        if fn(v) {
+            out = append(out, v)
+        }
+    }
+    return out
+}
+// Usage:
+evens := Filter(nums, func(n int) bool { return n%2 == 0 })
+
+# Go: filter slice - map (transform)
+func Map[T, U any](s []T, fn func(T) U) []U {
+    out := make([]U, len(s))
+    for i, v := range s {
+        out[i] = fn(v)
+    }
+    return out
+}
+
+# Go: filter slice - reduce
+func Reduce[T, U any](s []T, init U, fn func(U, T) U) U {
+    acc := init
+    for _, v := range s {
+        acc = fn(acc, v)
+    }
+    return acc
+}
+
+# Go: sort slice of structs
+sort.Slice(items, func(i, j int) bool {
+    return items[i].<field> < items[j].<field>
+})
+
+# Go: sort slice - stable sort
+sort.SliceStable(items, func(i, j int) bool {
+    return items[i].<field> < items[j].<field>
+})
+
+# Go: deduplicate slice using map
+func Unique[T comparable](s []T) []T {
+    seen := make(map[T]struct{}, len(s))
+    out := make([]T, 0, len(s))
+    for _, v := range s {
+        if _, ok := seen[v]; !ok {
+            seen[v] = struct{}{}
+            out = append(out, v)
+        }
+    }
+    return out
+}
+
+# Go: chunk slice into batches
+func Chunk[T any](s []T, size int) [][]T {
+    var chunks [][]T
+    for size < len(s) {
+        s, chunks = s[size:], append(chunks, s[:size])
+    }
+    return append(chunks, s)
+}
+
+$ field: echo "Name Age Score CreatedAt"
+
+; ─────────────────────────────────────────────
+; STRUCTS
+; ─────────────────────────────────────────────
+
+% golang, go, struct
+
+# Go: struct definition with tags
+type <Name> struct {
+    ID        int       `json:"id"         db:"id"`
+    Name      string    `json:"name"       db:"name"        validate:"required"`
+    Email     string    `json:"email"      db:"email"       validate:"required,email"`
+    CreatedAt time.Time `json:"created_at" db:"created_at"`
+    deleted   bool      // unexported field
+}
+
+# Go: struct embedding (composition over inheritance)
+type Base struct {
+    ID        int
+    CreatedAt time.Time
+    UpdatedAt time.Time
+}
+
+type User struct {
+    Base              // embed - promotes fields & methods
+    Name  string
+    Email string
+}
+
+u := User{Name: "Alice"}
+fmt.Println(u.ID)        // promoted from Base
+fmt.Println(u.CreatedAt) // promoted from Base
+
+# Go: struct methods - value vs pointer receiver
+// Value receiver: does NOT modify original
+func (u User) FullName() string {
+    return u.FirstName + " " + u.LastName
+}
+
+// Pointer receiver: CAN modify original, preferred for mutation
+func (u *User) Deactivate() {
+    u.Active = false
+}
+
+# Go: constructor pattern
+func New<Name>(name, email string) (*<Name>, error) {
+    if name == "" {
+        return nil, errors.New("name is required")
+    }
+    return &<Name>{
+        Name:      name,
+        Email:     email,
+        CreatedAt: time.Now(),
+    }, nil
+}
+
+# Go: struct with interface implementation
+type Stringer interface {
+    String() string
+}
+
+func (u User) String() string {
+    return fmt.Sprintf("User{ID:%d Name:%s}", u.ID, u.Name)
+}
+
+# Go: struct comparison and zero value check
+var u User                      // zero value
+fmt.Println(u == (User{}))     // true if all fields comparable
+fmt.Println(reflect.DeepEqual(u, User{})) // works for all types
+
+$ Name: echo "User Order Product Config Service"
+
+; ─────────────────────────────────────────────
+; GO CONCURRENCY
+; ─────────────────────────────────────────────
+
+% golang, go, concurrency, goroutine, channel
+
+# Go: goroutine basics
+go func() {
+    // runs concurrently
+    fmt.Println("in goroutine")
+}()
+
+# Go: channel - unbuffered (synchronous)
+ch := make(chan <type>)
+go func() { ch <- <value> }()
+v := <-ch
+
+# Go: channel - buffered (async up to cap)
+ch := make(chan <type>, <bufsize>)
+ch <- <value>   // non-blocking if buffer not full
+v := <-ch
+
+# Go: WaitGroup - wait for goroutines to finish
+var wg sync.WaitGroup
+for _, item := range items {
+    wg.Add(1)
+    go func(item Item) {
+        defer wg.Done()
+        process(item)
+    }(item)
+}
+wg.Wait()
+
+# Go: select - multiplex channels
+select {
+case v := <-ch1:
+    fmt.Println("from ch1:", v)
+case v := <-ch2:
+    fmt.Println("from ch2:", v)
+case ch3 <- <value>:
+    fmt.Println("sent to ch3")
+case <-time.After(1 * time.Second):
+    fmt.Println("timeout")
+case <-ctx.Done():
+    fmt.Println("context cancelled:", ctx.Err())
+}
+
+# Go: mutex - protect shared state
+type SafeCounter struct {
+    mu sync.Mutex
+    v  map[string]int
+}
+
+func (c *SafeCounter) Inc(key string) {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.v[key]++
+}
+
+func (c *SafeCounter) Value(key string) int {
+    c.mu.RLock()   // use RWMutex for read-heavy workloads
+    defer c.mu.RUnlock()
+    return c.v[key]
+}
+
+# mutex lock
+var mu sync.Mutex
+mu.Lock()
+    <critical_section>
+mu.Unlock()
+
+# Go: once - run initialization exactly once
+var (
+    instance *MyService
+    once     sync.Once
+)
+
+func GetInstance() *MyService {
+    once.Do(func() {
+        instance = &MyService{}
+    })
+    return instance
+}
+
+# Go: context - cancellation and timeout
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+defer cancel()
+
+ctx, cancel = context.WithCancel(context.Background())
+defer cancel()
+
+// Pass context down the call chain
+result, err := doWork(ctx)
+
+# Go: errgroup - goroutines with error propagation
+g, ctx := errgroup.WithContext(context.Background())
+
+for _, url := range urls {
+    url := url // capture loop var
+    g.Go(func() error {
+        return fetch(ctx, url)
+    })
+}
+
+if err := g.Wait(); err != nil {
+    log.Fatal(err)
+}
+
+$ type: echo "int string struct{} []byte error"
+$ value: echo "42 \"hello\" result"
+$ bufsize: echo "10 100 1000"
+
+; ─────────────────────────────────────────────
+; WORKER POOL
+; ─────────────────────────────────────────────
+
+% golang, go, worker, pool, concurrency
+
+# Go: worker pool pattern
+func workerPool(numWorkers int, jobs <-chan Job, results chan<- Result) {
+    var wg sync.WaitGroup
+    for i := 0; i < numWorkers; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            for job := range jobs {  // exits when jobs channel is closed
+                result := process(job)
+                results <- result
+            }
+        }(i)
+    }
+    wg.Wait()
+    close(results)
+}
+
+// Producer:
+func produce(jobs chan<- Job, data []Job) {
+    defer close(jobs)  // signal workers: no more work
+    for _, job := range data {
+        jobs <- job
+    }
+}
+
+// Usage:
+jobs    := make(chan Job, 100)
+results := make(chan Result, 100)
+
+go produce(jobs, myData)
+go workerPool(<numWorkers>, jobs, results)
+
+for r := range results {
+    fmt.Println(r)
+}
+
+# Go: worker pool with context cancellation
+func workerPoolCtx(ctx context.Context, n int, jobs <-chan Job, results chan<- Result) {
+    var wg sync.WaitGroup
+    for i := 0; i < n; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for {
+                select {
+                case job, ok := <-jobs:
+                    if !ok {
+                        return
+                    }
+                    results <- process(job)
+                case <-ctx.Done():
+                    return
+                }
+            }
+        }()
+    }
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
+}
+
+# Go: fan-out / fan-in
+func fanOut(in <-chan Work, n int) []<-chan Result {
+    outs := make([]<-chan Result, n)
+    for i := 0; i < n; i++ {
+        outs[i] = worker(in)
+    }
+    return outs
+}
+
+func fanIn(cs ...<-chan Result) <-chan Result {
+    merged := make(chan Result)
+    var wg sync.WaitGroup
+    for _, c := range cs {
+        wg.Add(1)
+        go func(ch <-chan Result) {
+            defer wg.Done()
+            for v := range ch {
+                merged <- v
+            }
+        }(c)
+    }
+    go func() { wg.Wait(); close(merged) }()
+    return merged
+}
+
+$ numWorkers: echo "4 8 16 runtime.NumCPU()"
+
+; ─────────────────────────────────────────────
+; RATE LIMITER
+; ─────────────────────────────────────────────
+
+% golang, go, rate, limiter, throttle
+
+# Go: rate limiter - token bucket (golang.org/x/time/rate)
+import "golang.org/x/time/rate"
+
+limiter := rate.NewLimiter(rate.Limit(<rps>), <burst>)
+
+// Block until a token is available
+if err := limiter.Wait(ctx); err != nil {
+    return err
+}
+
+// Non-blocking: attempt to take a token
+if !limiter.Allow() {
+    return errors.New("rate limit exceeded")
+}
+
+// Reserve a token (inspect delay before executing)
+r := limiter.Reserve()
+if !r.OK() {
+    return errors.New("exceeds max burst")
+}
+time.Sleep(r.Delay())
+
+# Go: rate limiter - per-key (e.g. per user/IP)
+type PerKeyLimiter struct {
+    mu       sync.Mutex
+    limiters map[string]*rate.Limiter
+    rps      rate.Limit
+    burst    int
+}
+
+func (pkl *PerKeyLimiter) Get(key string) *rate.Limiter {
+    pkl.mu.Lock()
+    defer pkl.mu.Unlock()
+    if l, ok := pkl.limiters[key]; ok {
+        return l
+    }
+    l := rate.NewLimiter(pkl.rps, pkl.burst)
+    pkl.limiters[key] = l
+    return l
+}
+
+// Usage in HTTP middleware:
+func (pkl *PerKeyLimiter) Middleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        key := r.RemoteAddr // or user ID from JWT
+        if !pkl.Get(key).Allow() {
+            http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
+            return
+        }
+        next.ServeHTTP(w, r)
+    })
+}
+
+# Go: rate limiter - simple ticker-based
+ticker := time.NewTicker(time.Second / time.Duration(<rps>))
+defer ticker.Stop()
+
+for job := range jobs {
+    <-ticker.C  // wait for tick = respect rate limit
+    go process(job)
+}
+
+# Go: rate limiter - semaphore (limit concurrency)
+sem := make(chan struct{}, <maxConcurrent>)
+
+for _, item := range items {
+    sem <- struct{}{}  // acquire
+    go func(item Item) {
+        defer func() { <-sem }()  // release
+        process(item)
+    }(item)
+}
+// drain semaphore to wait for all goroutines
+for i := 0; i < cap(sem); i++ {
+    sem <- struct{}{}
+}
+
+$ rps: echo "10 100 1000 10.0 0.5"
+$ burst: echo "1 5 10 20"
+$ maxConcurrent: echo "10 50 100 runtime.NumCPU()"
+
+; ─────────────────────────────────────────────
+; REST API
+; ─────────────────────────────────────────────
+
+% golang, go, http, rest, api
+
+# Go: HTTP server - basic mux with middleware
+mux := http.NewServeMux()
+mux.HandleFunc("GET /users",        handleListUsers)
+mux.HandleFunc("GET /users/{id}",   handleGetUser)   // Go 1.22+ pattern
+mux.HandleFunc("POST /users",       handleCreateUser)
+mux.HandleFunc("PUT /users/{id}",   handleUpdateUser)
+mux.HandleFunc("DELETE /users/{id}", handleDeleteUser)
+
+srv := &http.Server{
+    Addr:         ":<port>",
+    Handler:      applyMiddleware(mux, logging, recovery, cors),
+    ReadTimeout:  5 * time.Second,
+    WriteTimeout: 10 * time.Second,
+    IdleTimeout:  60 * time.Second,
+}
+
+log.Fatal(srv.ListenAndServe())
+
+# Go: HTTP handler - decode JSON body + respond
+func handleCreateUser(w http.ResponseWriter, r *http.Request) {
+    var req CreateUserRequest
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        respondError(w, http.StatusBadRequest, "invalid JSON")
+        return
+    }
+    defer r.Body.Close()
+
+    user, err := userSvc.Create(r.Context(), req)
+    if err != nil {
+        respondError(w, http.StatusInternalServerError, err.Error())
+        return
+    }
+
+    respondJSON(w, http.StatusCreated, user)
+}
+
+func respondJSON(w http.ResponseWriter, status int, v any) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(status)
+    json.NewEncoder(w).Encode(v)
+}
+
+func respondError(w http.ResponseWriter, status int, msg string) {
+    respondJSON(w, status, map[string]string{"error": msg})
+}
 
 # json marshal
 json.Marshal(<struct>)
@@ -24,19 +667,168 @@ json.Marshal(<struct>)
 # json unmarshal
 json.Unmarshal(<json>, &<struct>)
 
-# create goroutine
-go func() {
-    <code>
-}()
-
-# mutex lock
-var mu sync.Mutex
-mu.Lock()
-<critical_section>
-mu.Unlock()
-
 # http server
 http.ListenAndServe(":<port>", nil)
+
+# Go: HTTP middleware pattern
+type Middleware func(http.Handler) http.Handler
+
+func applyMiddleware(h http.Handler, mws ...Middleware) http.Handler {
+    for i := len(mws) - 1; i >= 0; i-- {
+        h = mws[i](h)
+    }
+    return h
+}
+
+func loggingMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        rw := &responseWriter{w, http.StatusOK}
+        next.ServeHTTP(rw, r)
+        log.Printf("%s %s %d %s", r.Method, r.URL.Path, rw.status, time.Since(start))
+    })
+}
+
+type responseWriter struct {
+    http.ResponseWriter
+    status int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+    rw.status = code
+    rw.ResponseWriter.WriteHeader(code)
+}
+
+# Go: HTTP client - with timeout and retries
+client := &http.Client{
+    Timeout: 10 * time.Second,
+    Transport: &http.Transport{
+        MaxIdleConns:        100,
+        MaxIdleConnsPerHost: 10,
+        IdleConnTimeout:     90 * time.Second,
+    },
+}
+
+// Build request with context
+req, err := http.NewRequestWithContext(ctx, http.MethodGet, "<url>", nil)
+req.Header.Set("Authorization", "Bearer "+token)
+req.Header.Set("Content-Type", "application/json")
+
+resp, err := client.Do(req)
+if err != nil {
+    return fmt.Errorf("request failed: %w", err)
+}
+defer resp.Body.Close()
+
+if resp.StatusCode != http.StatusOK {
+    return fmt.Errorf("unexpected status: %d", resp.StatusCode)
+}
+
+var result MyResponse
+if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+    return fmt.Errorf("decode failed: %w", err)
+}
+
+# Go: HTTP client - retry with exponential backoff
+func doWithRetry(ctx context.Context, maxRetries int, fn func() error) error {
+    var err error
+    for attempt := 0; attempt < maxRetries; attempt++ {
+        if err = fn(); err == nil {
+            return nil
+        }
+        backoff := time.Duration(math.Pow(2, float64(attempt))) * 100 * time.Millisecond
+        select {
+        case <-time.After(backoff):
+        case <-ctx.Done():
+            return ctx.Err()
+        }
+    }
+    return fmt.Errorf("after %d retries: %w", maxRetries, err)
+}
+
+# Go: graceful shutdown
+quit := make(chan os.Signal, 1)
+signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+<-quit
+
+log.Println("shutting down...")
+ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+defer cancel()
+
+if err := srv.Shutdown(ctx); err != nil {
+    log.Fatalf("forced shutdown: %v", err)
+}
+log.Println("server stopped")
+
+# Go: path value from URL (Go 1.22+)
+func handleGetUser(w http.ResponseWriter, r *http.Request) {
+    id := r.PathValue("id")      // extracts {id} from pattern
+    // ...
+}
+
+# Go: query params parsing
+q := r.URL.Query()
+page, _ := strconv.Atoi(q.Get("page"))
+if page < 1 { page = 1 }
+limit, _ := strconv.Atoi(q.Get("limit"))
+if limit == 0 { limit = 20 }
+
+$ port: echo "8080 3000 9090 4000"
+$ url: echo "https://api.example.com/v1/users https://httpbin.org/get"
+
+; ─────────────────────────────────────────────
+; ERROR HANDLING
+; ─────────────────────────────────────────────
+
+% golang, go, error
+
+# Go: custom error type
+type AppError struct {
+    Code    int
+    Message string
+    Err     error
+}
+
+func (e *AppError) Error() string {
+    return fmt.Sprintf("[%d] %s: %v", e.Code, e.Message, e.Err)
+}
+
+func (e *AppError) Unwrap() error { return e.Err }
+
+// Usage:
+return &AppError{Code: 404, Message: "user not found", Err: err}
+
+# Go: error wrapping and unwrapping
+err := fmt.Errorf("operation failed: %w", originalErr)
+
+// Check error type
+var appErr *AppError
+if errors.As(err, &appErr) {
+    fmt.Println("app error code:", appErr.Code)
+}
+
+// Check sentinel error
+if errors.Is(err, sql.ErrNoRows) {
+    // handle not found
+}
+
+# Go: multiple return - idiomatic error handling
+func divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, errors.New("division by zero")
+    }
+    return a / b, nil
+}
+
+result, err := divide(10, 0)
+if err != nil {
+    log.Printf("error: %v", err)
+    return
+}
+
+; ─────────────────────────────────────────────
+; Misc
+; ─────────────────────────────────────────────
 
 # read file
 os.ReadFile(<file>)
