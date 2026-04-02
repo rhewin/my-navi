@@ -1,25 +1,1168 @@
-% php, common
+% php, common, basics
 
-# explode string
+; ─────────────────────────────────────────────
+; VARIABLES & TYPES
+; ─────────────────────────────────────────────
+
+% php, variables, types, declaration, basics
+
+# PHP: variable declaration
+$name = "Alice";
+$age  = 30;
+$pi   = 3.14;
+$flag = true;
+$nothing = null;
+
+# PHP: type checking
+gettype($var)           // "integer" "double" "string" "boolean" "array" "object" "NULL"
+is_int($var)
+is_float($var)
+is_string($var)
+is_bool($var)
+is_null($var)
+is_array($var)
+is_object($var)
+is_numeric("42")        // true for "42", "3.14", etc.
+
+# PHP: type casting
+(int)    "42"           // 42
+(float)  "3.14"         // 3.14
+(string) 42             // "42"
+(bool)   0              // false
+(array)  $value         // wrap in array
+
+intval("42", <base>)    // base 10 default; intval("0xFF", 16)
+floatval("3.14")
+strval(42)
+settype($var, "integer")  // in-place cast
+
+# PHP: null coalescing
+$val = $arr["key"] ?? "default";          // no notice if key missing
+$val = $a ?? $b ?? $c ?? "fallback";      // chain
+$arr["key"] ??= "default";               // assign if null (PHP 7.4+)
+
+# PHP: constants
+define("MAX_SIZE", 100);
+const VERSION = "1.0.0";
+defined("MAX_SIZE")  // check if defined
+
+$ base: echo "2 8 10 16"
+
+; ─────────────────────────────────────────────
+; TYPE CONVERSION
+; ─────────────────────────────────────────────
+
+% php, conversion, cast, type, number, string
+
+# PHP: int ↔ string
+$s = (string) 42;
+$s = strval(42);
+$s = number_format(1234567.891, 2, ".", ",");  // "1,234,567.89"
+$n = (int) "42abc";    // 42 (stops at non-numeric)
+$n = intval("42");
+
+# PHP: float ↔ string
+$s = (string) 3.14;
+$s = number_format(3.14159, 2);   // "3.14"
+$s = sprintf("%.4f", 3.14159);    // "3.1416"
+$f = (float) "3.14";
+$f = floatval("3.14abc");         // 3.14
+
+# PHP: int ↔ other bases
+$hex  = dechex(255);              // "ff"
+$oct  = decoct(8);                // "10"
+$bin  = decbin(42);               // "101010"
+$n    = hexdec("ff");             // 255
+$n    = octdec("10");             // 8
+$n    = bindec("101010");         // 42
+$hex  = sprintf("%08X", 255);     // "000000FF"
+
+# PHP: number formatting
+number_format(<number>, <decimals>, ".", ",")   // e.g. "1,234.56"
+money_format is deprecated — use NumberFormatter (intl ext)
+
+# PHP: bool ↔ string / int
+$s = $flag ? "true" : "false";
+$b = (bool) "false";   // WARNING: true — any non-empty string is true
+$b = filter_var("false", FILTER_VALIDATE_BOOLEAN);  // actual false
+
+# PHP: char ↔ int (ASCII)
+$char = chr(65);      // "A"
+$code = ord("A");     // 65
+
+$ number: echo "1234567.891 3.14159 0.5"
+$ decimals: echo "0 2 4"
+
+; ─────────────────────────────────────────────
+; STRING MANIPULATION
+; ─────────────────────────────────────────────
+
+% php, string, strings, manipulation, text
+
+# PHP: explode / implode
 explode(<delimiter>, <string>)
-
-# implode array
+explode(<delimiter>, <string>, <limit>)   // max <limit> elements
 implode(<delimiter>, <array>)
+str_split($str, <length>)                 // split into chunks of length
 
-# json decode
-json_decode(<json>, true)
+# PHP: length / search / position
+strlen($str)
+mb_strlen($str)                           // multibyte-safe
+strpos($str, "<needle>")                  // false if not found
+strrpos($str, "<needle>")                 // last occurrence
+str_contains($str, "<needle>")            // PHP 8.0+
+str_starts_with($str, "<prefix>")         // PHP 8.0+
+str_ends_with($str, "<suffix>")           // PHP 8.0+
+substr_count($str, "<needle>")
 
-# json encode
-json_encode(<data>)
+# PHP: substring
+substr($str, <start>)                     // from start to end
+substr($str, <start>, <length>)           // start + length
+mb_substr($str, <start>, <length>)        // multibyte-safe
 
-# connect mysql
-$conn = new mysqli(<host>, <user>, <password>, <db>)
+# PHP: replace
+str_replace("<search>", "<replace>", $str)
+str_ireplace("<search>", "<replace>", $str)  // case-insensitive
+str_replace(["a","b"], ["1","2"], $str)       // multiple pairs
+substr_replace($str, "<replace>", <start>, <length>)
 
-# check array key
-array_key_exists(<key>, <array>)
+# PHP: trim / pad
+trim($str)                         // both ends
+ltrim($str); rtrim($str)           // left / right
+trim($str, "<chars>")              // custom chars
+str_pad($str, <length>)            // right-pad with spaces
+str_pad($str, <length>, "<pad>", STR_PAD_LEFT)
+str_pad($str, <length>, "<pad>", STR_PAD_BOTH)
 
-# filter array
+# PHP: case
+strtolower($str); strtoupper($str)
+ucfirst($str)                      // capitalize first char
+lcfirst($str)
+ucwords($str)                      // capitalize each word
+mb_strtolower($str)                // multibyte-safe
+
+# PHP: repeat / reverse / wrap
+str_repeat("<str>", <times>)
+strrev($str)
+wordwrap($str, 75, "\n", true)
+
+# PHP: sprintf formatting
+sprintf("%d", 42)
+sprintf("%.2f", 3.14159)         // "3.14"
+sprintf("%05d", 42)              // "00042"
+sprintf("%-10s|", "left")        // "left      |"
+sprintf("%010.2f", 3.14)         // "0000003.14"
+sprintf("%s has %d items", $name, $count)
+
+# PHP: heredoc / nowdoc
+$html = <<<EOT
+    <p>Hello, {$name}</p>
+EOT;
+
+$raw = <<<'EOT'
+    No $variable interpolation here
+EOT;
+
+# PHP: string comparison
+strcmp($a, $b)          // 0 if equal, <0 / >0 otherwise
+strcasecmp($a, $b)      // case-insensitive
+similar_text($a, $b, $percent)
+levenshtein($a, $b)
+soundex($str); metaphone($str)
+
+# PHP: hash / encryption
+md5($str)
+sha1($str)
+hash("<algo>", $str)               // "sha256", "sha512", etc.
+password_hash($plain, PASSWORD_BCRYPT)
+password_verify($plain, $hash)
+
+$ delimiter: echo "',' ' ' ':' '|' PHP_EOL"
+$ needle: echo "'foo' 'bar' 'http'"
+$ prefix: echo "'https' 'user_' '/api'"
+$ suffix: echo "'.php' '.html' '_id'"
+$ length: echo "10 20 50 100"
+$ pad: echo "'0' ' ' '-' '*'"
+$ times: echo "3 5 10"
+$ algo: echo "sha256 sha512 md5"
+
+; ─────────────────────────────────────────────
+; ARRAY OPERATIONS
+; ─────────────────────────────────────────────
+
+% php, array, list, collection, map
+
+# PHP: create array
+$arr = [1, 2, 3];
+$arr = ["key" => "value", "foo" => "bar"];
+$arr = array_fill(0, <count>, <value>);    // fill with value
+$arr = range(1, 10);                       // [1..10]
+$arr = range(1, 10, 2);                    // [1,3,5,7,9]
+
+# PHP: add / remove
+$arr[] = $val;                             // append
+array_push($arr, $val);                    // append (multiple ok)
+array_unshift($arr, $val);                 // prepend
+$last   = array_pop($arr);                 // remove + return last
+$first  = array_shift($arr);               // remove + return first
+array_splice($arr, <offset>, <length>);    // remove range
+unset($arr[<key>]);                        // remove by key (preserves keys)
+
+# PHP: search
+in_array(<value>, $arr)                    // loose comparison
+in_array(<value>, $arr, true)             // strict (===)
+array_search(<value>, $arr)               // returns key or false
+array_key_exists(<key>, $arr)
+isset($arr[<key>])                         // also false if value is null
+
+# PHP: filter / map / reduce
 array_filter(<array>, fn($x) => <condition>)
-
-# map array
+array_filter($arr)                         // remove falsy values
 array_map(fn($x) => <code>, <array>)
+array_map(fn($a, $b) => $a + $b, $arr1, $arr2)  // multiple arrays
+array_reduce($arr, fn($carry, $item) => $carry + $item, 0)
+
+# PHP: sort
+sort($arr)                // sort values, reindex
+rsort($arr)               // reverse sort values
+asort($arr)               // sort values, keep keys
+arsort($arr)              // reverse, keep keys
+ksort($arr)               // sort by key
+krsort($arr)              // reverse sort by key
+usort($arr, fn($a, $b) => $a <=> $b)       // custom compare (spaceship op)
+uasort($arr, fn($a, $b) => $a <=> $b)     // custom, keep keys
+uksort($arr, fn($a, $b) => strcmp($a, $b)) // custom, sort by key
+
+# PHP: slice / splice / chunk
+array_slice($arr, <offset>, <length>)
+array_slice($arr, <offset>, <length>, true) // preserve keys
+array_chunk($arr, <size>)                  // split into chunks
+array_chunk($arr, <size>, true)            // preserve keys
+
+# PHP: merge / combine / diff
+array_merge($a, $b)                        // numeric keys reindexed
+array_replace($a, $b)                      // $b overwrites $a
+$combined = array_combine($keys, $values)  // keys[] + values[] → assoc
+array_diff($a, $b)                         // values in $a not in $b
+array_diff_key($a, $b)                     // keys in $a not in $b
+array_intersect($a, $b)                    // values in both
+array_intersect_key($a, $b)                // keys in both
+
+# PHP: transform
+array_keys($arr)
+array_values($arr)                         // re-index to 0..n
+array_flip($arr)                           // swap keys ↔ values
+array_unique($arr)                         // remove duplicates
+array_reverse($arr)
+array_column($records, "<col>")            // pluck column from 2D array
+array_column($records, "<col>", "<key>")   // indexed by key column
+
+# PHP: count / stats
+count($arr)
+array_sum($arr)
+array_product($arr)
+max($arr); min($arr)
+array_count_values($arr)  // frequency map
+
+# PHP: flatten
+array_merge(...$nested)                    // one level
+// recursive flatten:
+function flatten(array $arr): array {
+    return array_merge(...array_map(
+        fn($v) => is_array($v) ? flatten($v) : [$v], $arr
+    ));
+}
+
+# PHP: walk
+array_walk($arr, function(&$val, $key) {
+    $val = strtoupper($val);
+});
+
+$ count: echo "5 10 100"
+$ value: echo "0 null '' 'default'"
+$ offset: echo "0 1 2 -1"
+$ length: echo "1 3 10 null"
+$ size: echo "3 5 10"
+$ col: echo "'name' 'id' 'email'"
+$ key: echo "'id' 'slug' 'uuid'"
+
+; ─────────────────────────────────────────────
+; CONTROL FLOW
+; ─────────────────────────────────────────────
+
+% php, control-flow, if, loop, match, foreach
+
+# PHP: match expression (PHP 8.0+)
+$result = match(<expr>) {
+    1, 2    => "one or two",
+    3       => "three",
+    default => "other",
+};
+// strict comparison (===), no fallthrough, exhaustive
+
+# PHP: match with no-match exception
+// Throws \UnhandledMatchError if no arm matches and no default
+
+# PHP: foreach
+foreach ($arr as $val) { }
+foreach ($arr as $key => $val) { }
+foreach ($arr as &$val) { $val *= 2; }  // by reference
+unset($val);  // IMPORTANT: break reference after loop
+
+# PHP: for / while / do-while
+for ($i = 0; $i < <n>; $i++) { }
+while (<condition>) { }
+do { } while (<condition>);
+
+# PHP: break / continue with levels
+foreach ($outer as $a) {
+    foreach ($inner as $b) {
+        if ($b === 0) continue 2;  // continue outer loop
+        if ($a === 0) break 2;     // break both loops
+    }
+}
+
+# PHP: list() / [] destructuring
+[$a, $b, $c] = [1, 2, 3];
+[, $second] = [1, 2, 3];                      // skip first
+["name" => $name, "age" => $age] = $person;   // key destructuring
+[$first, ...$rest] = $arr;                    // spread (not native, use array_slice)
+
+$ expr: echo "$status $code $type"
+$ n: echo "10 100 count(\$arr)"
+$ condition: echo "!empty(\$queue) \$i < \$max"
+
+; ─────────────────────────────────────────────
+; FUNCTIONS
+; ─────────────────────────────────────────────
+
+% php, function, callable, closure, arrow, higher-order
+
+# PHP: function declaration
+function <name>(<arg1>, <arg2> = <default>): <returnType> {
+    return <value>;
+}
+
+# PHP: typed parameters + return (PHP 8+)
+function add(int $a, int $b): int {
+    return $a + $b;
+}
+
+function maybeNull(?string $s): ?string {
+    return $s ? strtoupper($s) : null;
+}
+
+# PHP: union types (PHP 8.0+)
+function process(int|string $id): User|null { }
+
+# PHP: named arguments (PHP 8.0+)
+htmlspecialchars(string: $s, double_encode: false);
+array_slice(array: $arr, offset: 0, length: 5, preserve_keys: true);
+
+# PHP: variadic functions
+function sum(int ...$nums): int {
+    return array_sum($nums);
+}
+sum(1, 2, 3);
+sum(...$arr);  // spread array as args
+
+# PHP: closure / anonymous function
+$fn = function($x) use ($factor) {
+    return $x * $factor;
+};
+
+# PHP: arrow function (PHP 7.4+) — auto-captures outer scope
+$fn = fn($x) => $x * $factor;
+$doubled = array_map(fn($x) => $x * 2, $arr);
+
+# PHP: first-class callable (PHP 8.1+)
+$fn = strlen(...);           // create closure from builtin
+$fn = $obj->method(...);     // from method
+$arr = array_map(strtoupper(...), $arr);
+
+# PHP: callable types
+call_user_func($callable, $arg1, $arg2);
+call_user_func_array($callable, $args);
+is_callable($var);
+
+$ name: echo "calculate process validate transform"
+$ arg1: echo "string \$name int \$id array \$data"
+$ default: echo "null [] '' 0 true"
+$ returnType: echo "string int bool array void mixed"
+
+; ─────────────────────────────────────────────
+; OOP
+; ─────────────────────────────────────────────
+
+% php, oop, class, object, interface, trait, extends
+
+# PHP: class definition
+class <Name> {
+    public string $name;
+    protected int $age;
+    private array $data = [];
+
+    public function __construct(string $name, int $age) {
+        $this->name = $name;
+        $this->age  = $age;
+    }
+
+    public function getName(): string {
+        return $this->name;
+    }
+}
+
+# PHP: constructor property promotion (PHP 8.0+)
+class User {
+    public function __construct(
+        public readonly int    $id,
+        public string          $name,
+        protected ?string      $email = null,
+    ) {}
+}
+
+# PHP: readonly properties (PHP 8.1+)
+class Point {
+    public function __construct(
+        public readonly float $x,
+        public readonly float $y,
+    ) {}
+}
+
+# PHP: interface
+interface <Name> {
+    public function <method>(<args>): <returnType>;
+}
+
+class MyClass implements <Name> {
+    public function <method>(<args>): <returnType> { }
+}
+
+# PHP: abstract class
+abstract class BaseRepository {
+    abstract public function find(int $id): ?object;
+
+    public function findOrFail(int $id): object {
+        return $this->find($id) ?? throw new \RuntimeException("Not found: $id");
+    }
+}
+
+# PHP: trait
+trait Timestamps {
+    private \DateTime $createdAt;
+    private \DateTime $updatedAt;
+
+    public function touch(): void {
+        $this->updatedAt = new \DateTime();
+    }
+}
+
+class Post {
+    use Timestamps;
+}
+
+# PHP: static methods and properties
+class Counter {
+    private static int $count = 0;
+
+    public static function increment(): void {
+        self::$count++;
+    }
+
+    public static function get(): int {
+        return static::$count;  // late static binding
+    }
+}
+
+Counter::increment();
+Counter::get();
+
+# PHP: magic methods
+__construct()   // instantiation
+__destruct()    // cleanup
+__toString()    // string cast
+__invoke()      // called as function: $obj()
+__get($name)    // read inaccessible property
+__set($name, $value)
+__isset($name)
+__unset($name)
+__clone()       // after clone
+
+# PHP: cloning and comparison
+$copy = clone $obj;          // shallow clone
+$a == $b    // same property values (loose)
+$a === $b   // same instance
+
+# PHP: enum (PHP 8.1+)
+enum Status {
+    case Active;
+    case Inactive;
+    case Pending;
+}
+
+enum Color: string {
+    case Red   = "red";
+    case Green = "green";
+    case Blue  = "blue";
+
+    public function label(): string {
+        return ucfirst($this->value);
+    }
+}
+
+$s = Status::Active;
+$c = Color::from("red");          // throws ValueError if invalid
+$c = Color::tryFrom("unknown");   // null if invalid
+Color::cases();                   // array of all cases
+
+$ Name: echo "User Order Product Service Repository"
+$ method: echo "find save delete validate"
+$ args: echo "int \$id string \$name"
+$ returnType: echo "string int bool void ?User"
+
+; ─────────────────────────────────────────────
+; ERROR HANDLING & EXCEPTIONS
+; ─────────────────────────────────────────────
+
+% php, error, exception, try, catch, throw, handling
+
+# PHP: try / catch / finally
+try {
+    $result = riskyOperation();
+} catch (\InvalidArgumentException $e) {
+    // handle specific
+    log_error($e->getMessage());
+} catch (\RuntimeException|\LogicException $e) {
+    // multiple types (PHP 8+)
+} catch (\Throwable $e) {
+    // catch all errors and exceptions
+} finally {
+    // always runs (cleanup)
+}
+
+# PHP: throw expression (PHP 8.0+)
+$val = $input ?? throw new \InvalidArgumentException("input required");
+$user = $this->find($id) ?? throw new NotFoundException("User $id not found");
+
+# PHP: custom exception
+class DomainException extends \RuntimeException {
+    public function __construct(
+        string $message,
+        private readonly string $context = "",
+        int $code = 0,
+        ?\Throwable $previous = null,
+    ) {
+        parent::__construct($message, $code, $previous);
+    }
+
+    public function getContext(): string {
+        return $this->context;
+    }
+}
+
+// Throw:
+throw new DomainException("Invalid state", context: "checkout");
+
+# PHP: exception hierarchy
+\Throwable
+├── \Error          (fatal PHP errors)
+│   ├── \TypeError
+│   ├── \ValueError
+│   ├── \ArithmeticError
+│   └── \ParseError
+└── \Exception
+    ├── \RuntimeException
+    ├── \LogicException
+    ├── \InvalidArgumentException
+    └── \BadMethodCallException
+
+# PHP: set global error / exception handler
+set_exception_handler(function (\Throwable $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    exit(1);
+});
+
+set_error_handler(function (int $errno, string $errstr, string $file, int $line): bool {
+    throw new \ErrorException($errstr, 0, $errno, $file, $line);
+});
+
+; ─────────────────────────────────────────────
+; JSON
+; ─────────────────────────────────────────────
+
+% php, json, encode, decode, serialize
+
+# PHP: json decode
+json_decode(<json>, true)          // → assoc array (true = array, false = object)
+json_decode($json, true, 512, JSON_THROW_ON_ERROR)  // throws \JsonException
+
+# PHP: json encode
+json_encode(<data>)
+json_encode($data, JSON_PRETTY_PRINT)
+json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+json_encode($data, JSON_THROW_ON_ERROR)  // throws \JsonException on error
+
+# PHP: json error handling (safe pattern)
+try {
+    $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+    $out  = json_encode($data, JSON_THROW_ON_ERROR);
+} catch (\JsonException $e) {
+    // handle malformed json
+}
+
+# PHP: json check legacy (pre PHP 7.3)
+$data = json_decode($json, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    throw new \RuntimeException(json_last_error_msg());
+}
+
+$ json: echo '\'{"key":"value"}\' $response $body'
+$ data: echo '$user $arr $result'
+
+; ─────────────────────────────────────────────
+; DATABASE / PDO
+; ─────────────────────────────────────────────
+
+% php, database, pdo, mysql, postgres, sql, query
+
+# PHP: PDO connect (preferred over mysqli)
+$pdo = new \PDO(
+    "mysql:host=<host>;dbname=<db>;charset=utf8mb4",
+    "<user>",
+    "<pass>",
+    [
+        \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+        \PDO::ATTR_EMULATE_PREPARES   => false,
+    ]
+);
+
+# PHP: PDO - query single row
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+$stmt->execute(["id" => $id]);
+$user = $stmt->fetch();           // assoc array or false
+$user = $stmt->fetchObject(User::class);  // hydrate object
+
+# PHP: PDO - query multiple rows
+$stmt = $pdo->prepare("SELECT * FROM users WHERE active = :active");
+$stmt->execute(["active" => 1]);
+$users = $stmt->fetchAll();                        // all rows
+$users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+$users = $stmt->fetchAll(\PDO::FETCH_CLASS, User::class);
+$col   = $stmt->fetchAll(\PDO::FETCH_COLUMN);     // first column only
+
+# PHP: PDO - insert / update / delete
+$stmt = $pdo->prepare(
+    "INSERT INTO users (name, email) VALUES (:name, :email)"
+);
+$stmt->execute(["name" => $name, "email" => $email]);
+$id       = $pdo->lastInsertId();
+$affected = $stmt->rowCount();
+
+# PHP: PDO - transaction
+try {
+    $pdo->beginTransaction();
+    $pdo->prepare("UPDATE accounts SET balance = balance - :amount WHERE id = :id")
+        ->execute(["amount" => $amount, "id" => $fromId]);
+    $pdo->prepare("UPDATE accounts SET balance = balance + :amount WHERE id = :id")
+        ->execute(["amount" => $amount, "id" => $toId]);
+    $pdo->commit();
+} catch (\Throwable $e) {
+    $pdo->rollBack();
+    throw $e;
+}
+
+# PHP: connect mysqli (legacy)
+$conn = new mysqli(<host>, <user>, <password>, <db>);
+if ($conn->connect_error) {
+    throw new \RuntimeException($conn->connect_error);
+}
+$conn->set_charset("utf8mb4");
+
+# PHP: mysqli - prepared statement
+$stmt = $conn->prepare("SELECT id, name FROM users WHERE email = ?");
+$stmt->bind_param("s", $email);   // s=string i=int d=double b=blob
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    // use $row
+}
+$stmt->close();
+$conn->close();
+
+$ host: echo "localhost 127.0.0.1 db"
+$ db: echo "myapp_db app_production"
+$ user: echo "root dbuser app_user"
+$ pass: echo "secret password"
+
+; ─────────────────────────────────────────────
+; HTTP / REQUEST / RESPONSE
+; ─────────────────────────────────────────────
+
+% php, http, request, response, header, session, cookie
+
+# PHP: superglobals
+$_GET["key"]          // URL query params
+$_POST["key"]         // POST form data
+$_REQUEST["key"]      // GET + POST + COOKIE
+$_FILES["file"]       // uploaded files
+$_SERVER["key"]       // server + request info
+$_ENV["key"]          // environment variables
+$_SESSION["key"]      // session data
+$_COOKIE["key"]       // cookies
+
+# PHP: request method + headers
+$method     = $_SERVER["REQUEST_METHOD"];      // GET POST PUT etc.
+$uri        = $_SERVER["REQUEST_URI"];
+$remoteAddr = $_SERVER["REMOTE_ADDR"];
+$host       = $_SERVER["HTTP_HOST"];
+$userAgent  = $_SERVER["HTTP_USER_AGENT"];
+$contentType = $_SERVER["CONTENT_TYPE"] ?? "";
+
+// Read raw body (for JSON APIs)
+$body = file_get_contents("php://input");
+$data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+# PHP: send headers and response
+header("Content-Type: application/json");
+header("Location: /login", true, 302);
+header("Cache-Control: no-cache, must-revalidate");
+http_response_code(201);
+
+// JSON response helper
+function jsonResponse(mixed $data, int $status = 200): never {
+    http_response_code($status);
+    header("Content-Type: application/json");
+    echo json_encode($data, JSON_THROW_ON_ERROR);
+    exit;
+}
+
+# PHP: session
+session_start();
+$_SESSION["user_id"] = $userId;
+$val = $_SESSION["user_id"] ?? null;
+unset($_SESSION["user_id"]);
+session_destroy();                   // destroy all session data
+session_regenerate_id(true);         // prevent session fixation
+
+# PHP: cookies
+setcookie("name", "value", time() + 3600, "/");
+setcookie("name", "", time() - 1);  // delete cookie
+// Secure cookie:
+setcookie("token", $token, [
+    "expires"  => time() + 86400,
+    "path"     => "/",
+    "secure"   => true,
+    "httponly" => true,
+    "samesite" => "Strict",
+]);
+
+# PHP: input validation / sanitization
+$id    = filter_input(INPUT_GET,  "id",    FILTER_VALIDATE_INT);
+$email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_EMAIL);
+$url   = filter_input(INPUT_POST, "url",   FILTER_VALIDATE_URL);
+$safe  = filter_input(INPUT_POST, "name",  FILTER_SANITIZE_SPECIAL_CHARS);
+
+// Manual:
+$id    = (int) ($_GET["id"] ?? 0);
+$email = filter_var($email, FILTER_VALIDATE_EMAIL);
+$safe  = htmlspecialchars($input, ENT_QUOTES, "UTF-8");
+$safe  = strip_tags($input);
+
+; ─────────────────────────────────────────────
+; FILE I/O
+; ─────────────────────────────────────────────
+
+% php, file, filesystem, io, read, write, directory
+
+# PHP: read / write entire file
+$contents = file_get_contents("<path>");
+file_put_contents("<path>", $contents);
+file_put_contents("<path>", $data, FILE_APPEND | LOCK_EX);
+
+# PHP: read file as lines array
+$lines = file("<path>", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+# PHP: open file handle
+$fh = fopen("<path>", "<mode>");   // r r+ w w+ a a+ x
+while (!feof($fh)) {
+    $line = fgets($fh);
+}
+fwrite($fh, "content");
+fclose($fh);
+
+# PHP: CSV read / write
+$fh = fopen("data.csv", "r");
+while (($row = fgetcsv($fh, 0, ",")) !== false) {
+    [$col1, $col2] = $row;
+}
+fclose($fh);
+
+$fh = fopen("out.csv", "w");
+fputcsv($fh, ["name", "age", "email"]);
+fputcsv($fh, [$name, $age, $email]);
+fclose($fh);
+
+# PHP: file info / existence
+file_exists("<path>")
+is_file("<path>")
+is_dir("<path>")
+is_readable("<path>")
+is_writable("<path>")
+filesize("<path>")
+filemtime("<path>")          // last modified timestamp
+pathinfo("<path>")           // array: dirname, basename, extension, filename
+pathinfo("<path>", PATHINFO_EXTENSION)
+basename("<path>")
+dirname("<path>")
+realpath("<path>")           // resolve symlinks + ..
+
+# PHP: copy / move / delete
+copy("src.txt", "dst.txt")
+rename("old.txt", "new.txt")   // also works as move
+unlink("<path>")               // delete file
+mkdir("<dir>", 0755, true)     // recursive mkdir -p
+rmdir("<dir>")                 // remove empty dir
+
+# PHP: directory listing
+$files = scandir("<dir>");
+$files = array_diff(scandir("<dir>"), [".", ".."]);  // skip . and ..
+
+// Glob
+$phpFiles = glob("<dir>/*.php");
+$all      = glob("<dir>/**/*", GLOB_BRACE);
+
+// RecursiveIterator
+$iter = new \RecursiveIteratorIterator(
+    new \RecursiveDirectoryIterator("<dir>", \FilesystemIterator::SKIP_DOTS)
+);
+foreach ($iter as $file) {
+    echo $file->getPathname();
+}
+
+# PHP: temp file
+$tmp = tempnam(sys_get_temp_dir(), "prefix_");
+register_shutdown_function("unlink", $tmp);
+
+$ path: echo "'/var/www/data.json' 'config.php' '/tmp/output.csv'"
+$ mode: echo "r r+ w w+ a a+"
+$ dir: echo "'/var/www/uploads' './storage' '/tmp'"
+
+; ─────────────────────────────────────────────
+; REGEX
+; ─────────────────────────────────────────────
+
+% php, regex, regexp, preg, pattern, match
+
+# PHP: regex test / match
+preg_match("/<pattern>/", $subject)                  // 1 if match, 0 if not
+preg_match("/<pattern>/", $subject, $matches)        // $matches[0] full, $matches[1] group1
+preg_match("/<pattern>/i", $subject, $matches)       // case-insensitive
+preg_match_all("/<pattern>/", $subject, $matches)    // all matches
+
+# PHP: regex replace
+preg_replace("/<pattern>/", "<replacement>", $str)
+preg_replace("/<pattern>/e", "<code>", $str)         // deprecated — use callback
+preg_replace_callback("/<pattern>/", function($m) {
+    return strtoupper($m[0]);
+}, $str)
+
+# PHP: regex split
+preg_split("/<pattern>/", $str)
+preg_split("/[\s,]+/", "one two,three")  // split on space or comma
+
+# PHP: named groups
+preg_match("/(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})/", $str, $m);
+echo $m["year"], $m["month"], $m["day"];
+
+# PHP: common patterns
+$patterns = [
+    "email"  => "/^[\w.+-]+@[\w-]+\.[\w.]{2,}$/i",
+    "url"    => "/^https?:\/\/.+/i",
+    "uuid"   => "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i",
+    "slug"   => "/^[a-z0-9]+(?:-[a-z0-9]+)*$/",
+    "ip"     => "/^(\d{1,3}\.){3}\d{1,3}$/",
+    "date"   => "/^\d{4}-\d{2}-\d{2}$/",
+    "digits" => "/^\d+$/",
+];
+
+$ pattern: echo "'\d+' '[a-z]+' '\w+@\w+\.\w+' '\d{4}-\d{2}-\d{2}'"
+$ replacement: echo "'$1' '<b>$0</b>' ''"
+
+; ─────────────────────────────────────────────
+; DATE & TIME
+; ─────────────────────────────────────────────
+
+% php, date, time, datetime, carbon, timestamp
+
+# PHP: current date/time
+$now = new \DateTime();
+$now = new \DateTimeImmutable();         // immutable (preferred)
+$now = \DateTimeImmutable::createFromFormat("Y-m-d", "2024-01-15");
+
+# PHP: format date
+$now->format("Y-m-d")                   // "2024-01-15"
+$now->format("Y-m-d H:i:s")            // "2024-01-15 10:30:00"
+$now->format(\DateTime::RFC3339)        // "2024-01-15T10:30:00+00:00"
+$now->format("D, d M Y")               // "Mon, 15 Jan 2024"
+date("Y-m-d")                           // procedural style (current time)
+date("Y-m-d H:i:s", $timestamp)
+
+# PHP: parse date string
+$dt = \DateTimeImmutable::createFromFormat("d/m/Y", "15/01/2024");
+$dt = new \DateTimeImmutable("2024-01-15 10:30:00");
+$dt = new \DateTimeImmutable("next Monday");
+$dt = new \DateTimeImmutable("+3 days");
+
+# PHP: date arithmetic
+$future  = $now->modify("+7 days");
+$past    = $now->modify("-1 month");
+$next    = $now->add(new \DateInterval("P1Y2M3D"));    // +1y2m3d
+$prev    = $now->sub(new \DateInterval("PT5H"));       // -5h
+
+# PHP: diff between dates
+$diff = $start->diff($end);
+$diff->days              // total days
+$diff->h                 // hours component
+$diff->i                 // minutes component
+$diff->invert            // 1 if $end < $start
+
+# PHP: Unix timestamp
+$ts    = time();                         // current timestamp
+$ts    = $now->getTimestamp();
+$dt    = (new \DateTimeImmutable())->setTimestamp($ts);
+$today = mktime(0, 0, 0, (int)date("m"), (int)date("d"), (int)date("Y"));
+
+# PHP: timezone
+$tz  = new \DateTimeZone("Asia/Jakarta");
+$now = new \DateTimeImmutable("now", $tz);
+$now = $now->setTimezone(new \DateTimeZone("UTC"));
+date_default_timezone_set("Asia/Jakarta");   // global default
+
+# PHP: date comparison
+$a < $b     // DateTime objects compare directly
+$a == $b    // same point in time
+$a->getTimestamp() > $b->getTimestamp()
+
+; ─────────────────────────────────────────────
+; ENVIRONMENT & CONFIG
+; ─────────────────────────────────────────────
+
+% php, env, environment, config, dotenv, getenv
+
+# PHP: read environment variable
+$val  = getenv("APP_ENV");               // false if not set
+$val  = $_ENV["APP_ENV"] ?? "default";
+
+# PHP: putenv (set at runtime)
+putenv("APP_ENV=production");
+
+# PHP: php.ini values at runtime
+ini_get("upload_max_filesize")
+ini_set("memory_limit", "256M")
+ini_set("max_execution_time", "60")
+
+# PHP: parse .env file manually (or use vlucas/phpdotenv)
+// vlucas/phpdotenv:
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+$dotenv->required(["DB_HOST", "DB_NAME", "APP_KEY"])->notEmpty();
+
+; ─────────────────────────────────────────────
+; LOGGING & DEBUGGING
+; ─────────────────────────────────────────────
+
+% php, log, debug, print, dump, var, error
+
+# PHP: output / debug print
+var_dump($val)             // type + value, verbose
+print_r($val)              // human-readable (arrays/objects)
+print_r($val, true)        // return as string instead of echo
+var_export($val)           // valid PHP syntax output
+var_export($val, true)     // return as string
+
+# PHP: formatted dump (dev helper)
+function dd(mixed ...$vars): never {
+    foreach ($vars as $v) {
+        echo "<pre>"; var_dump($v); echo "</pre>";
+    }
+    exit(1);
+}
+
+# PHP: error log
+error_log("Something went wrong: $message");
+error_log(print_r($data, true));
+error_log($e->getMessage() . "\n" . $e->getTraceAsString());
+
+# PHP: PSR-3 logger (Monolog example)
+$log = new \Monolog\Logger("app");
+$log->pushHandler(new \Monolog\Handler\StreamHandler("app.log", \Monolog\Level::Debug));
+$log->info("User logged in", ["user_id" => $id]);
+$log->error("DB query failed", ["error" => $e->getMessage(), "sql" => $sql]);
+
+# PHP: assertions (dev/test only)
+assert($val > 0, "Value must be positive");
+
+; ─────────────────────────────────────────────
+; COMPOSER & AUTOLOADING
+; ─────────────────────────────────────────────
+
+% php, composer, autoload, package, dependency, namespace
+
+# PHP: namespace declaration
+namespace App\Services;
+
+use App\Models\User;
+use App\Repositories\UserRepository as UserRepo;
+use function array_map;
+use const PHP_EOL;
+
+# PHP: composer commands
+// composer init                         init new project
+// composer require <vendor/pkg>         add dependency
+// composer require <vendor/pkg> --dev   add dev dependency
+// composer remove <vendor/pkg>          remove package
+// composer update                       update all to allowed versions
+// composer install                      install from composer.lock
+// composer dump-autoload -o             regenerate optimized autoload
+// composer show                         list installed packages
+// composer outdated                     show outdatable packages
+// composer audit                        check security vulnerabilities
+
+# PHP: autoload in script
+require_once __DIR__ . "/vendor/autoload.php";
+
+# PHP: composer.json autoload
+// "autoload": {
+//     "psr-4": { "App\\": "src/" },
+//     "files": ["src/helpers.php"]
+// }
+
+; ─────────────────────────────────────────────
+; TESTING (PHPUnit)
+; ─────────────────────────────────────────────
+
+% php, test, phpunit, unit, testing, mock, assert
+
+# PHP: basic test class
+use PHPUnit\Framework\TestCase;
+
+class UserServiceTest extends TestCase {
+    public function test_creates_user(): void {
+        $svc  = new UserService();
+        $user = $svc->create("Alice", "alice@example.com");
+
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame("Alice", $user->name);
+    }
+}
+
+# PHP: PHPUnit - common assertions
+$this->assertEquals($expected, $actual)
+$this->assertSame($expected, $actual)          // strict ===
+$this->assertTrue($val)
+$this->assertFalse($val)
+$this->assertNull($val)
+$this->assertNotNull($val)
+$this->assertCount(3, $arr)
+$this->assertEmpty($arr)
+$this->assertContains($needle, $haystack)
+$this->assertArrayHasKey("key", $arr)
+$this->assertStringContainsString("foo", $str)
+$this->assertMatchesRegularExpression("/\d+/", $str)
+$this->expectException(\InvalidArgumentException::class)
+$this->expectExceptionMessage("invalid input")
+
+# PHP: data provider (table-driven tests)
+#[DataProvider("additionProvider")]
+public function test_add(int $a, int $b, int $expected): void {
+    $this->assertSame($expected, add($a, $b));
+}
+
+public static function additionProvider(): array {
+    return [
+        "positive" => [2, 3, 5],
+        "negative" => [-1, -2, -3],
+        "zero"     => [0, 0, 0],
+    ];
+}
+
+# PHP: mock objects
+$mock = $this->createMock(UserRepository::class);
+$mock->expects($this->once())
+     ->method("find")
+     ->with(1)
+     ->willReturn(new User(1, "Alice"));
+
+// Stub (don't care about call count):
+$stub = $this->createStub(Mailer::class);
+$stub->method("send")->willReturn(true);
+
+# PHP: run tests
+// php vendor/bin/phpunit
+// php vendor/bin/phpunit --filter testMethodName
+// php vendor/bin/phpunit --coverage-html coverage/
+
+; ─────────────────────────────────────────────
+; MISC UTILITIES
+; ─────────────────────────────────────────────
+
+% php, utility, misc, math, random, hash, uuid
+
+# PHP: math functions
+abs(-5)
+ceil(4.1)     // 5.0
+floor(4.9)    // 4.0
+round(4.567, 2)  // 4.57
+max(1, 2, 3)
+min(1, 2, 3)
+pow(2, 8)     // 256
+sqrt(16)      // 4.0
+intdiv(7, 2)  // 3 (integer division)
+fmod(7, 2)    // 1.0 (float modulo)
+M_PI          // 3.14159...
+PHP_INT_MAX
+PHP_FLOAT_MAX
+
+# PHP: random
+rand(<min>, <max>)
+mt_rand(<min>, <max>)                     // faster Mersenne Twister
+random_int(<min>, <max>)                  // cryptographically secure
+shuffle($arr)                             // in-place shuffle
+array_rand($arr)                          // random key
+array_rand($arr, <n>)                     // n random keys
+
+# PHP: UUID v4 (no ext)
+function uuid4(): string {
+    $data = random_bytes(16);
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+    return vsprintf("%s%s-%s-%s-%s-%s%s%s", str_split(bin2hex($data), 4));
+}
+
+# PHP: hashing (passwords)
+$hash   = password_hash($password, PASSWORD_BCRYPT, ["cost" => 12]);
+$hash   = password_hash($password, PASSWORD_ARGON2ID);
+$valid  = password_verify($password, $hash);
+$rehash = password_needs_rehash($hash, PASSWORD_BCRYPT, ["cost" => 12]);
+
+# PHP: serialization
+$s = serialize($data);
+$d = unserialize($s);  // WARNING: never unserialize untrusted input
+
+# PHP: sleep / performance
+usleep(500000);           // 500ms (microseconds)
+sleep(1);                 // 1 second
+$start = microtime(true);
+// ... code ...
+$elapsed = microtime(true) - $start;
+
+# PHP: output buffering
+ob_start();
+// ... echo / print ...
+$content = ob_get_clean();
+
+$ min: echo "0 1 100"
+$ max: echo "100 1000 PHP_INT_MAX"
+$ n: echo "1 3 5"
