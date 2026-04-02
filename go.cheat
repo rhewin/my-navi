@@ -34,6 +34,11 @@ for i := 0; i < <n>; i++ {
     fmt.Println(i)
 }
 
+# Go: while-style loop
+for <condition> {
+    // loop body
+}
+
 # Go: infinite loop with break
 for {
     if <condition> {
@@ -52,7 +57,7 @@ $ condition: echo "done err != nil ctx.Done()"
 ; SWITCH STATEMENTS
 ; ─────────────────────────────────────────────
 
-% golang, go, switch
+% golang, go, switch, control-flow
 
 # Go: switch on value
 switch <variable> {
@@ -104,10 +109,118 @@ $ val2: echo "running stopped"
 $ val3: echo "paused idle"
 
 ; ─────────────────────────────────────────────
+; VARIABLES & DECLARATIONS
+; ─────────────────────────────────────────────
+
+% golang, go, variables, declaration, basics
+
+# Go: variable declaration forms
+var x int          // zero value
+var x int = 10     // explicit type + value
+x := 10            // short declaration (infers type)
+var x, y int = 1, 2
+x, y := 1, 2
+
+# Go: const declaration
+const Pi = 3.14159
+const (
+    StatusOK    = 200
+    StatusNotFound = 404
+)
+
+# Go: iota - auto-incrementing const
+type Direction int
+const (
+    North Direction = iota // 0
+    East                   // 1
+    South                  // 2
+    West                   // 3
+)
+
+# Go: iota with bit shift (flags/bitmask)
+type Permission uint
+const (
+    Read    Permission = 1 << iota // 1
+    Write                          // 2
+    Execute                        // 4
+)
+
+# Go: multiple return values
+func minMax(nums []int) (min, max int) {
+    min, max = nums[0], nums[0]
+    for _, v := range nums[1:] {
+        if v < min { min = v }
+        if v > max { max = v }
+    }
+    return // naked return
+}
+
+# Go: blank identifier
+_, err := someFunc()   // discard first return value
+for _, v := range s {} // discard index
+
+; ─────────────────────────────────────────────
+; TYPE CONVERSION
+; ─────────────────────────────────────────────
+
+% golang, go, conversion, cast, type, strconv
+
+# Go: numeric type conversion
+i := 42
+f := float64(i)       // int → float64
+u := uint(i)          // int → uint
+b := byte(i)          // int → byte (uint8)
+r := rune(i)          // int → rune (int32)
+i2 := int(f)          // float64 → int (truncates)
+
+# Go: int ↔ string (strconv)
+s := strconv.Itoa(42)                         // int → string "42"
+n, err := strconv.Atoi("42")                  // string → int
+n64, err := strconv.ParseInt("42", 10, 64)    // string → int64 (base, bitSize)
+s = strconv.FormatInt(int64(n), 10)           // int64 → string (base 10)
+u64, err := strconv.ParseUint("42", 10, 64)   // string → uint64
+
+# Go: float ↔ string (strconv)
+s := strconv.FormatFloat(3.14, 'f', 2, 64)   // float64 → "3.14" (fmt, prec, bitSize)
+f, err := strconv.ParseFloat("3.14", 64)      // string → float64
+
+# Go: bool ↔ string (strconv)
+s := strconv.FormatBool(true)           // → "true"
+b, err := strconv.ParseBool("true")    // → true (accepts 1, t, T, TRUE, true, etc.)
+
+# Go: string ↔ []byte ↔ []rune
+b := []byte("hello")       // string → []byte
+s := string(b)             // []byte → string
+r := []rune("hello, 世界") // string → []rune (unicode-safe)
+s2 := string(r)            // []rune → string
+
+# Go: fmt.Sprintf conversion (any → string)
+s := fmt.Sprintf("%d", 42)          // int → string
+s := fmt.Sprintf("%.2f", 3.14159)  // float → "3.14"
+s := fmt.Sprintf("%v", anyValue)    // any → default format
+s := fmt.Sprintf("%T", anyValue)    // any → type name string
+s := fmt.Sprintf("%b", 42)         // int → binary string "101010"
+s := fmt.Sprintf("%x", 255)        // int → hex "ff"
+s := fmt.Sprintf("%08b", 42)       // zero-padded binary
+
+# Go: interface{} / any type assertion
+var i any = "hello"
+s, ok := i.(string)    // safe assertion; ok=false if wrong type
+s := i.(string)        // panics if wrong type — use only when sure
+
+# Go: string number bases
+n, err := strconv.ParseInt("0xFF", 0, 64)    // auto-detect base (0x hex, 0 octal, 0b binary)
+n, err := strconv.ParseInt("ff", 16, 64)     // explicit hex
+n, err := strconv.ParseInt("101010", 2, 64)  // explicit binary
+s := fmt.Sprintf("0x%X", n)                  // → "0xFF"
+
+$ type: echo "int int64 float64 uint string bool"
+
+; ─────────────────────────────────────────────
 ; STRING MANIPULATION
 ; ─────────────────────────────────────────────
 
-% golang, go, strings
+% golang, go, strings, manipulation, text
 
 # Go: substring
 <string>[<start>:<end>]
@@ -120,12 +233,15 @@ strings.HasSuffix("<str>", "<suffix>")
 # Go: strings - split and join
 parts := strings.Split("<str>", "<sep>")
 joined := strings.Join(parts, "<sep>")
+fields := strings.Fields("  foo bar  baz  ")  // split on any whitespace
 
 # Go: strings - trim whitespace / characters
 strings.TrimSpace("  hello  ")
 strings.Trim("<str>", "<cutset>")
 strings.TrimLeft("<str>", "<cutset>")
 strings.TrimRight("<str>", "<cutset>")
+strings.TrimPrefix("<str>", "<prefix>")
+strings.TrimSuffix("<str>", "<suffix>")
 
 # Go: strings - replace
 strings.ReplaceAll("<str>", "<old>", "<new>")
@@ -134,11 +250,20 @@ strings.Replace("<str>", "<old>", "<new>", <n>)  // n=-1 for all
 # Go: strings - case conversion
 strings.ToUpper("<str>")
 strings.ToLower("<str>")
-strings.Title("<str>")  // deprecated, use golang.org/x/text
+strings.EqualFold("Go", "go")  // case-insensitive compare
 
 # Go: strings - index / count
-strings.Index("<str>", "<substr>")     // -1 if not found
+strings.Index("<str>", "<substr>")       // -1 if not found
+strings.LastIndex("<str>", "<substr>")
 strings.Count("<str>", "<substr>")
+strings.ContainsRune("<str>", '<rune>')
+strings.ContainsAny("<str>", "<chars>")  // any char in chars set
+
+# Go: strings - repeat and pad
+strings.Repeat("ab", 3)                        // "ababab"
+fmt.Sprintf("%-10s|", "left")                  // left-padded  "left      |"
+fmt.Sprintf("%10s|", "right")                  // right-padded "     right|"
+fmt.Sprintf("%010d", 42)                        // zero-padded  "0000000042"
 
 # Go: strings - builder (efficient concatenation)
 var sb strings.Builder
@@ -147,18 +272,15 @@ for _, s := range <slice> {
     sb.WriteByte('\n')
 }
 result := sb.String()
+sb.Reset() // reuse
 
-# Go: strings - convert int/float to string
-s := strconv.Itoa(<int>)
-s := fmt.Sprintf("%.2f", <float>)
-s := strconv.FormatFloat(<float>, 'f', 2, 64)
+# Go: strings - NewReader (io.Reader from string)
+r := strings.NewReader("hello")
+// use r as io.Reader anywhere
 
-# Go: strings - parse string to int/float
-n, err := strconv.Atoi("<numstr>")
-f, err := strconv.ParseFloat("<numstr>", 64)
-
-# Go: strings - fmt.Sprintf formatting
-s := fmt.Sprintf("name=%-10s age=%03d ratio=%.4f", name, age, ratio)
+# Go: strings - cut (Go 1.18+)
+before, after, found := strings.Cut("user@example.com", "@")
+// before="user" after="example.com" found=true
 
 $ str: echo "hello world foo bar"
 $ substr: echo "world foo"
@@ -169,15 +291,57 @@ $ cutset: echo "\" \" * /"
 $ old: echo "foo http"
 $ new: echo "bar https"
 $ slice: echo "words lines parts"
-$ int: echo "42 100 0"
-$ float: echo "3.14 2.718 1.0"
-$ numstr: echo "42 3.14 100"
+$ rune: echo "A z 世"
+$ chars: echo "aeiou abc"
 
 ; ─────────────────────────────────────────────
-; FILTER SLICE DATA
+; SLICE OPERATIONS
 ; ─────────────────────────────────────────────
 
-% golang, go, slice, filter
+% golang, go, slice, array, collection
+
+# Go: slice - create and initialize
+s := []int{1, 2, 3}
+s := make([]int, <len>)           // len=cap, zero-valued
+s := make([]int, <len>, <cap>)    // len with pre-allocated cap
+
+# Go: slice - append
+s = append(s, 1)
+s = append(s, 1, 2, 3)
+s = append(s, other...)  // spread another slice
+
+# Go: slice - copy
+dst := make([]int, len(src))
+n := copy(dst, src)  // copies min(len(dst), len(src)) elements
+
+# Go: slice - operations
+s[<start>:<end>]          // sub-slice (shared backing array!)
+s[<start>:]               // from start to end
+s[:<end>]                 // from 0 to end
+s[:]                      // full copy of view
+
+# Go: slice - safe clone (avoid shared backing array)
+clone := append([]int(nil), s...)
+clone := slices.Clone(s)  // Go 1.21+
+
+# Go: slice - contains (Go 1.21+)
+slices.Contains(s, val)
+idx := slices.Index(s, val)  // -1 if not found
+
+# Go: slice - delete element at index
+s = append(s[:i], s[i+1:]...)       // order-preserving
+s[i] = s[len(s)-1]; s = s[:len(s)-1] // swap-delete (faster, no order)
+
+# Go: slice - insert at index
+s = append(s[:i+1], s[i:]...)
+s[i] = val
+
+# Go: slice - reverse
+slices.Reverse(s)  // Go 1.21+ in-place
+// manual:
+for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+    s[i], s[j] = s[j], s[i]
+}
 
 # Go: filter slice - generic pattern (Go 1.18+ generics)
 func Filter[T any](s []T, fn func(T) bool) []T {
@@ -220,6 +384,12 @@ sort.SliceStable(items, func(i, j int) bool {
     return items[i].<field> < items[j].<field>
 })
 
+# Go: sort slice - built-in types
+sort.Ints(s)
+sort.Strings(s)
+sort.Float64s(s)
+slices.Sort(s)  // Go 1.21+ (generic)
+
 # Go: deduplicate slice using map
 func Unique[T comparable](s []T) []T {
     seen := make(map[T]struct{}, len(s))
@@ -243,12 +413,75 @@ func Chunk[T any](s []T, size int) [][]T {
 }
 
 $ field: echo "Name Age Score CreatedAt"
+$ len: echo "0 10 100"
+$ cap: echo "10 100 1000"
+
+; ─────────────────────────────────────────────
+; MAP OPERATIONS
+; ─────────────────────────────────────────────
+
+% golang, go, map, hashmap, dictionary, collection
+
+# Go: map - create and initialize
+m := map[string]int{}
+m := map[string]int{"a": 1, "b": 2}
+m := make(map[string]int)
+m := make(map[string]int, <hint>)  // pre-size hint (performance)
+
+# Go: map - read / write / delete
+m["key"] = 42           // write
+v := m["key"]           // read (zero value if missing)
+v, ok := m["key"]       // safe read; ok=false if missing
+delete(m, "key")        // delete key
+
+# Go: map - iterate (random order)
+for k, v := range m {
+    fmt.Printf("%s: %v\n", k, v)
+}
+
+# Go: map - sorted iteration
+keys := make([]string, 0, len(m))
+for k := range m {
+    keys = append(keys, k)
+}
+sort.Strings(keys)
+for _, k := range keys {
+    fmt.Printf("%s: %v\n", k, m[k])
+}
+
+# Go: map - check key existence
+if v, ok := m[key]; ok {
+    fmt.Println("found:", v)
+}
+
+# Go: map - invert (swap keys and values)
+inv := make(map[V]K, len(m))
+for k, v := range m {
+    inv[v] = k
+}
+
+# Go: map - merge two maps
+for k, v := range src {
+    dst[k] = v
+}
+maps.Copy(dst, src)  // Go 1.21+
+
+# Go: map - clone
+clone := maps.Clone(m)  // Go 1.21+
+
+# Go: set pattern (map[T]struct{})
+set := make(map[string]struct{})
+set["item"] = struct{}{}
+_, exists := set["item"]
+delete(set, "item")
+
+$ hint: echo "10 100 1000"
 
 ; ─────────────────────────────────────────────
 ; STRUCTS
 ; ─────────────────────────────────────────────
 
-% golang, go, struct
+% golang, go, struct, type, oop
 
 # Go: struct definition with tags
 type <Name> struct {
@@ -313,13 +546,245 @@ var u User                      // zero value
 fmt.Println(u == (User{}))     // true if all fields comparable
 fmt.Println(reflect.DeepEqual(u, User{})) // works for all types
 
+# Go: anonymous struct (inline, one-off)
+config := struct {
+    Host string
+    Port int
+}{Host: "localhost", Port: 8080}
+
+# Go: struct field tags - common patterns
+// json: field name, omitempty, - (skip)
+Field string `json:"field_name,omitempty"`
+Skip  string `json:"-"`
+// yaml, db, validate, form, env tags follow same pattern
+
 $ Name: echo "User Order Product Config Service"
+
+; ─────────────────────────────────────────────
+; INTERFACES
+; ─────────────────────────────────────────────
+
+% golang, go, interface, polymorphism, duck-typing
+
+# Go: interface definition
+type <Name> interface {
+    <Method>() <ReturnType>
+    <Method2>(arg <ArgType>) (<ReturnType>, error)
+}
+
+# Go: interface - common stdlib interfaces
+// io.Reader / io.Writer / io.Closer / io.ReadWriter
+// fmt.Stringer  → String() string
+// error         → Error() string
+// sort.Interface → Len() int; Less(i,j int) bool; Swap(i,j int)
+
+# Go: interface - check implementation at compile time
+var _ io.Reader = (*MyReader)(nil)  // compile error if MyReader doesn't implement io.Reader
+
+# Go: interface - empty interface / any
+func printAny(v any) {
+    fmt.Printf("type=%T value=%v\n", v, v)
+}
+
+# Go: interface composition
+type ReadWriter interface {
+    io.Reader
+    io.Writer
+}
+
+# Go: interface - nil gotcha
+var r io.Reader            // nil interface
+var b *bytes.Buffer = nil  // typed nil
+r = b                      // r is NOT nil! (has type info)
+fmt.Println(r == nil)      // false — always check concrete type
+
+$ Name: echo "Reader Writer Handler Repository Service"
+$ Method: echo "Read Write Close Fetch Save"
+$ ReturnType: echo "int string error bool"
+$ ArgType: echo "[]byte string int context.Context"
+
+; ─────────────────────────────────────────────
+; GENERICS (Go 1.18+)
+; ─────────────────────────────────────────────
+
+% golang, go, generics, type-parameter, constraints
+
+# Go: generic function
+func Map[T, U any](s []T, fn func(T) U) []U {
+    out := make([]U, len(s))
+    for i, v := range s {
+        out[i] = fn(v)
+    }
+    return out
+}
+
+# Go: generic function with constraints
+func Min[T constraints.Ordered](a, b T) T {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+# Go: custom type constraint
+type Number interface {
+    int | int8 | int16 | int32 | int64 |
+    float32 | float64
+}
+
+func Sum[T Number](s []T) T {
+    var total T
+    for _, v := range s {
+        total += v
+    }
+    return total
+}
+
+# Go: generic struct
+type Stack[T any] struct {
+    items []T
+}
+
+func (s *Stack[T]) Push(v T)    { s.items = append(s.items, v) }
+func (s *Stack[T]) Pop() (T, bool) {
+    if len(s.items) == 0 {
+        var zero T
+        return zero, false
+    }
+    top := s.items[len(s.items)-1]
+    s.items = s.items[:len(s.items)-1]
+    return top, true
+}
+
+# Go: comparable constraint (usable as map key)
+func Contains[T comparable](s []T, v T) bool {
+    for _, item := range s {
+        if item == v {
+            return true
+        }
+    }
+    return false
+}
+
+; ─────────────────────────────────────────────
+; POINTERS
+; ─────────────────────────────────────────────
+
+% golang, go, pointer, reference, memory
+
+# Go: pointer basics
+x := 42
+p := &x          // p is *int, holds address of x
+fmt.Println(*p)  // dereference: 42
+*p = 99          // modify through pointer; x is now 99
+
+# Go: pointer to struct (preferred for mutation)
+u := &User{Name: "Alice"}  // u is *User
+u.Name = "Bob"             // auto-dereference (no need for (*u).Name)
+
+# Go: new() - allocate zero value
+p := new(int)    // *int pointing to 0
+p := new(User)   // *User with zero-value fields
+
+# Go: nil pointer guard
+if p == nil {
+    return errors.New("pointer is nil")
+}
+
+# Go: pointer to scalar (optional field pattern)
+type Config struct {
+    Timeout *int  // nil means "not set" vs 0
+}
+val := 30
+cfg := Config{Timeout: &val}
+
+# Go: helper - pointer to literal
+func Ptr[T any](v T) *T { return &v }
+// Usage: cfg.Timeout = Ptr(30)
+
+; ─────────────────────────────────────────────
+; ERROR HANDLING
+; ─────────────────────────────────────────────
+
+% golang, go, error, errors, handling
+
+# Go: custom error type
+type AppError struct {
+    Code    int
+    Message string
+    Err     error
+}
+
+func (e *AppError) Error() string {
+    return fmt.Sprintf("[%d] %s: %v", e.Code, e.Message, e.Err)
+}
+
+func (e *AppError) Unwrap() error { return e.Err }
+
+// Usage:
+return &AppError{Code: 404, Message: "user not found", Err: err}
+
+# Go: sentinel errors (package-level)
+var (
+    ErrNotFound   = errors.New("not found")
+    ErrUnauthorized = errors.New("unauthorized")
+)
+
+// Return:
+return ErrNotFound
+
+// Check:
+if errors.Is(err, ErrNotFound) {
+    // handle not found
+}
+
+# Go: error wrapping and unwrapping
+err := fmt.Errorf("operation failed: %w", originalErr)
+
+// Check error type
+var appErr *AppError
+if errors.As(err, &appErr) {
+    fmt.Println("app error code:", appErr.Code)
+}
+
+// Check sentinel error (works through wrap chain)
+if errors.Is(err, sql.ErrNoRows) {
+    // handle not found
+}
+
+# Go: multiple return - idiomatic error handling
+func divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, errors.New("division by zero")
+    }
+    return a / b, nil
+}
+
+result, err := divide(10, 0)
+if err != nil {
+    log.Printf("error: %v", err)
+    return
+}
+
+# Go: panic and recover
+func safeDiv(a, b int) (result int, err error) {
+    defer func() {
+        if r := recover(); r != nil {
+            err = fmt.Errorf("recovered: %v", r)
+        }
+    }()
+    return a / b, nil
+}
+
+# Go: join multiple errors (Go 1.20+)
+err := errors.Join(err1, err2, err3)
+// errors.Is and errors.As work on each wrapped error
 
 ; ─────────────────────────────────────────────
 ; GO CONCURRENCY
 ; ─────────────────────────────────────────────
 
-% golang, go, concurrency, goroutine, channel
+% golang, go, concurrency, goroutine, channel, async
 
 # Go: goroutine basics
 go func() {
@@ -336,6 +801,11 @@ v := <-ch
 ch := make(chan <type>, <bufsize>)
 ch <- <value>   // non-blocking if buffer not full
 v := <-ch
+
+# Go: channel - close and drain
+close(ch)
+for v := range ch {} // drains until closed
+v, ok := <-ch        // ok=false if closed and drained
 
 # Go: WaitGroup - wait for goroutines to finish
 var wg sync.WaitGroup
@@ -375,16 +845,22 @@ func (c *SafeCounter) Inc(key string) {
 }
 
 func (c *SafeCounter) Value(key string) int {
-    c.mu.RLock()   // use RWMutex for read-heavy workloads
+    c.mu.RLock()
     defer c.mu.RUnlock()
     return c.v[key]
 }
 
-# mutex lock
-var mu sync.Mutex
-mu.Lock()
-    <critical_section>
-mu.Unlock()
+# Go: RWMutex (read-heavy workloads)
+var mu sync.RWMutex
+mu.RLock(); defer mu.RUnlock()  // concurrent reads OK
+mu.Lock(); defer mu.Unlock()    // exclusive write
+
+# Go: atomic operations (lock-free counters)
+var counter int64
+atomic.AddInt64(&counter, 1)
+v := atomic.LoadInt64(&counter)
+atomic.StoreInt64(&counter, 0)
+atomic.CompareAndSwapInt64(&counter, old, new)
 
 # Go: once - run initialization exactly once
 var (
@@ -409,11 +885,17 @@ defer cancel()
 // Pass context down the call chain
 result, err := doWork(ctx)
 
+# Go: context - value passing (use sparingly)
+type ctxKey string
+const userKey ctxKey = "user"
+ctx = context.WithValue(ctx, userKey, user)
+user := ctx.Value(userKey).(*User)
+
 # Go: errgroup - goroutines with error propagation
 g, ctx := errgroup.WithContext(context.Background())
 
 for _, url := range urls {
-    url := url // capture loop var
+    url := url // capture loop var (pre Go 1.22)
     g.Go(func() error {
         return fetch(ctx, url)
     })
@@ -431,7 +913,7 @@ $ bufsize: echo "10 100 1000"
 ; WORKER POOL
 ; ─────────────────────────────────────────────
 
-% golang, go, worker, pool, concurrency
+% golang, go, worker, pool, concurrency, pattern
 
 # Go: worker pool pattern
 func workerPool(numWorkers int, jobs <-chan Job, results chan<- Result) {
@@ -526,7 +1008,7 @@ $ numWorkers: echo "4 8 16 runtime.NumCPU()"
 ; RATE LIMITER
 ; ─────────────────────────────────────────────
 
-% golang, go, rate, limiter, throttle
+% golang, go, rate, limiter, throttle, concurrency
 
 # Go: rate limiter - token bucket (golang.org/x/time/rate)
 import "golang.org/x/time/rate"
@@ -613,14 +1095,14 @@ $ maxConcurrent: echo "10 50 100 runtime.NumCPU()"
 ; REST API
 ; ─────────────────────────────────────────────
 
-% golang, go, http, rest, api
+% golang, go, http, rest, api, server, web
 
 # Go: HTTP server - basic mux with middleware
 mux := http.NewServeMux()
-mux.HandleFunc("GET /users",        handleListUsers)
-mux.HandleFunc("GET /users/{id}",   handleGetUser)   // Go 1.22+ pattern
-mux.HandleFunc("POST /users",       handleCreateUser)
-mux.HandleFunc("PUT /users/{id}",   handleUpdateUser)
+mux.HandleFunc("GET /users",         handleListUsers)
+mux.HandleFunc("GET /users/{id}",    handleGetUser)   // Go 1.22+ pattern
+mux.HandleFunc("POST /users",        handleCreateUser)
+mux.HandleFunc("PUT /users/{id}",    handleUpdateUser)
 mux.HandleFunc("DELETE /users/{id}", handleDeleteUser)
 
 srv := &http.Server{
@@ -661,14 +1143,17 @@ func respondError(w http.ResponseWriter, status int, msg string) {
     respondJSON(w, status, map[string]string{"error": msg})
 }
 
-# json marshal
-json.Marshal(<struct>)
+# Go: json marshal / unmarshal
+b, err := json.Marshal(<struct>)
+err = json.Unmarshal(b, &<struct>)
 
-# json unmarshal
-json.Unmarshal(<json>, &<struct>)
+// Pretty-print JSON
+b, err := json.MarshalIndent(<struct>, "", "  ")
 
-# http server
-http.ListenAndServe(":<port>", nil)
+// Raw JSON field
+type Wrapper struct {
+    Data json.RawMessage `json:"data"`
+}
 
 # Go: HTTP middleware pattern
 type Middleware func(http.Handler) http.Handler
@@ -777,64 +1262,598 @@ $ port: echo "8080 3000 9090 4000"
 $ url: echo "https://api.example.com/v1/users https://httpbin.org/get"
 
 ; ─────────────────────────────────────────────
-; ERROR HANDLING
+; TIME & DATE
 ; ─────────────────────────────────────────────
 
-% golang, go, error
+% golang, go, time, date, duration, timer
 
-# Go: custom error type
-type AppError struct {
-    Code    int
-    Message string
-    Err     error
+# Go: time - current time and formatting
+now := time.Now()
+fmt.Println(now.Format(time.RFC3339))          // "2006-01-02T15:04:05Z07:00"
+fmt.Println(now.Format("2006-01-02"))          // "2024-01-15"
+fmt.Println(now.Format("02 Jan 2006 15:04"))   // custom format
+// NOTE: Go uses the reference time: Mon Jan 2 15:04:05 MST 2006
+
+# Go: time - parse string to time.Time
+t, err := time.Parse(time.RFC3339, "2024-01-15T10:30:00Z")
+t, err := time.Parse("2006-01-02", "2024-01-15")
+t, err := time.ParseInLocation("2006-01-02 15:04:05", "2024-01-15 10:30:00", loc)
+
+# Go: time - arithmetic
+tomorrow := now.Add(24 * time.Hour)
+yesterday := now.Add(-24 * time.Hour)
+nextWeek := now.AddDate(0, 0, 7)
+nextMonth := now.AddDate(0, 1, 0)
+diff := t2.Sub(t1)              // time.Duration
+hours := diff.Hours()
+minutes := diff.Minutes()
+
+# Go: time - comparison
+t1.Before(t2)
+t1.After(t2)
+t1.Equal(t2)
+t1.IsZero()   // check for zero value
+
+# Go: time - duration constants
+d := 5 * time.Second
+d := 500 * time.Millisecond
+d := 2 * time.Minute
+d := 24 * time.Hour
+
+# Go: time - ticker and timer
+ticker := time.NewTicker(1 * time.Second)
+defer ticker.Stop()
+for t := range ticker.C {
+    fmt.Println("tick:", t)
 }
 
-func (e *AppError) Error() string {
-    return fmt.Sprintf("[%d] %s: %v", e.Code, e.Message, e.Err)
+timer := time.NewTimer(5 * time.Second)
+defer timer.Stop()
+<-timer.C  // block until timer fires
+
+// One-shot after:
+<-time.After(1 * time.Second)
+
+# Go: time - Unix timestamp
+ts := time.Now().Unix()              // seconds
+ts := time.Now().UnixMilli()         // milliseconds
+ts := time.Now().UnixNano()          // nanoseconds
+t := time.Unix(ts, 0)               // from seconds
+t := time.UnixMilli(tsMs)           // from milliseconds
+
+# Go: time - timezone
+loc, err := time.LoadLocation("Asia/Jakarta")
+t := time.Now().In(loc)
+utc := t.UTC()
+
+; ─────────────────────────────────────────────
+; FILE I/O
+; ─────────────────────────────────────────────
+
+% golang, go, file, io, filesystem, os
+
+# Go: read entire file
+data, err := os.ReadFile("<file>")
+// data is []byte
+lines := strings.Split(string(data), "\n")
+
+# Go: write entire file
+err := os.WriteFile("<file>", []byte(<data>), 0644)
+
+# Go: file - open and read line by line
+f, err := os.Open("<file>")
+if err != nil { return err }
+defer f.Close()
+
+scanner := bufio.NewScanner(f)
+for scanner.Scan() {
+    line := scanner.Text()
+    fmt.Println(line)
+}
+if err := scanner.Err(); err != nil {
+    return err
 }
 
-func (e *AppError) Unwrap() error { return e.Err }
+# Go: file - open for writing / append
+f, err := os.Create("<file>")                          // create/truncate
+f, err := os.OpenFile("<file>", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) // append
 
-// Usage:
-return &AppError{Code: 404, Message: "user not found", Err: err}
+w := bufio.NewWriter(f)
+fmt.Fprintln(w, "line")
+w.Flush()  // don't forget!
 
-# Go: error wrapping and unwrapping
-err := fmt.Errorf("operation failed: %w", originalErr)
-
-// Check error type
-var appErr *AppError
-if errors.As(err, &appErr) {
-    fmt.Println("app error code:", appErr.Code)
+# Go: file - check existence
+_, err := os.Stat("<file>")
+if os.IsNotExist(err) {
+    // file doesn't exist
+}
+if err == nil {
+    // file exists
 }
 
-// Check sentinel error
-if errors.Is(err, sql.ErrNoRows) {
-    // handle not found
+# Go: file - copy
+src, _ := os.Open("src.txt")
+defer src.Close()
+dst, _ := os.Create("dst.txt")
+defer dst.Close()
+_, err := io.Copy(dst, src)
+
+# Go: directory operations
+entries, err := os.ReadDir("<dir>")
+for _, e := range entries {
+    fmt.Println(e.Name(), e.IsDir())
 }
 
-# Go: multiple return - idiomatic error handling
-func divide(a, b float64) (float64, error) {
-    if b == 0 {
-        return 0, errors.New("division by zero")
+err := os.MkdirAll("<dir>", 0755)  // mkdir -p
+err := os.RemoveAll("<dir>")        // rm -rf
+
+# Go: path operations (filepath)
+base := filepath.Base("/foo/bar/baz.txt")   // "baz.txt"
+dir  := filepath.Dir("/foo/bar/baz.txt")    // "/foo/bar"
+ext  := filepath.Ext("baz.txt")            // ".txt"
+abs, err := filepath.Abs("relative/path")
+joined := filepath.Join("foo", "bar", "baz.txt")
+
+# Go: temp file / dir
+f, err := os.CreateTemp("", "prefix-*.txt")
+defer os.Remove(f.Name())
+
+dir, err := os.MkdirTemp("", "myapp-")
+defer os.RemoveAll(dir)
+
+# Go: walk directory tree
+err := filepath.WalkDir("<dir>", func(path string, d fs.DirEntry, err error) error {
+    if err != nil { return err }
+    if !d.IsDir() {
+        fmt.Println(path)
     }
-    return a / b, nil
-}
+    return nil
+})
 
-result, err := divide(10, 0)
-if err != nil {
-    log.Printf("error: %v", err)
-    return
-}
+$ file: echo "config.json data.txt output.csv"
+$ dir: echo "/tmp/myapp ./data ./output"
+$ data: echo "content hello world"
 
 ; ─────────────────────────────────────────────
-; Misc
+; REGEX
 ; ─────────────────────────────────────────────
 
-# read file
-os.ReadFile(<file>)
+% golang, go, regex, regexp, pattern, match
 
-# write file
-os.WriteFile(<file>, []byte(<data>), 0644)
+# Go: regex - compile and match
+re := regexp.MustCompile(`<pattern>`)  // panics on bad pattern (use at init)
+re, err := regexp.Compile(`<pattern>`) // safe compile
 
-# postgres connection
+re.MatchString("input")        // bool
+re.FindString("input")         // first match or ""
+re.FindAllString("input", -1)  // all matches (-1 = unlimited)
+
+# Go: regex - find with groups
+m := re.FindStringSubmatch("2024-01-15")
+// m[0] = full match, m[1] = first group, etc.
+
+matches := re.FindAllStringSubmatch("text", -1)
+for _, m := range matches {
+    fmt.Println(m[0], m[1])
+}
+
+# Go: regex - named groups
+re := regexp.MustCompile(`(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})`)
+m := re.FindStringSubmatch("2024-01-15")
+idx := re.SubexpIndex("year")   // get group index by name
+fmt.Println(m[idx])              // "2024"
+
+# Go: regex - replace
+result := re.ReplaceAllString("input", "replacement")
+result := re.ReplaceAllStringFunc("input", func(s string) string {
+    return strings.ToUpper(s)
+})
+
+# Go: regex - split
+parts := re.Split("a1b2c3", -1)  // ["a", "b", "c", ""]
+
+# Go: common patterns
+var (
+    reEmail  = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+    reUUID   = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+    rePhone  = regexp.MustCompile(`^\+?[1-9]\d{1,14}$`)
+    reSlug   = regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`)
+)
+
+$ pattern: echo `\d+` `[a-z]+` `(\w+)@(\w+\.\w+)` `\d{4}-\d{2}-\d{2}`
+
+; ─────────────────────────────────────────────
+; TESTING
+; ─────────────────────────────────────────────
+
+% golang, go, test, testing, unit, benchmark, mock
+
+# Go: basic unit test
+func TestAdd(t *testing.T) {
+    got := Add(2, 3)
+    want := 5
+    if got != want {
+        t.Errorf("Add(2,3) = %d, want %d", got, want)
+    }
+}
+
+# Go: table-driven tests (idiomatic)
+func TestAdd(t *testing.T) {
+    tests := []struct {
+        name string
+        a, b int
+        want int
+    }{
+        {"positive", 2, 3, 5},
+        {"negative", -1, -2, -3},
+        {"zero", 0, 0, 0},
+    }
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got := Add(tt.a, tt.b)
+            if got != tt.want {
+                t.Errorf("got %d, want %d", got, tt.want)
+            }
+        })
+    }
+}
+
+# Go: test helpers and assertions
+t.Helper()                        // marks func as test helper (cleaner failure line)
+t.Fatal("msg")                    // fail and stop test
+t.Fatalf("format %v", err)        // fail with format and stop
+t.Skip("skipping: reason")        // skip test
+t.Parallel()                      // run test in parallel
+
+# Go: benchmark test
+func BenchmarkAdd(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        Add(2, 3)
+    }
+}
+// Run: go test -bench=. -benchmem
+
+# Go: test with temporary dir / cleanup
+func TestSomething(t *testing.T) {
+    dir := t.TempDir()   // auto-cleaned after test
+    t.Cleanup(func() {
+        // custom cleanup
+    })
+}
+
+# Go: test HTTP handler
+func TestHandler(t *testing.T) {
+    req := httptest.NewRequest(http.MethodGet, "/users", nil)
+    w := httptest.NewRecorder()
+
+    handleListUsers(w, req)
+
+    resp := w.Result()
+    if resp.StatusCode != http.StatusOK {
+        t.Errorf("got %d, want %d", resp.StatusCode, http.StatusOK)
+    }
+}
+
+# Go: run specific tests
+// go test ./...                    run all tests
+// go test -run TestAdd             run by name regex
+// go test -run TestAdd/positive    run subtest
+// go test -v ./...                 verbose
+// go test -count=1 ./...           disable cache
+// go test -race ./...              race detector
+// go test -cover ./...             coverage
+// go test -coverprofile=c.out && go tool cover -html=c.out
+
+; ─────────────────────────────────────────────
+; DATABASE / SQL
+; ─────────────────────────────────────────────
+
+% golang, go, sql, database, postgres, mysql, db
+
+# Go: postgres connection
 db, err := sql.Open("postgres", "<dsn>")
+if err != nil {
+    log.Fatal(err)
+}
+defer db.Close()
+
+// Configure pool
+db.SetMaxOpenConns(25)
+db.SetMaxIdleConns(10)
+db.SetConnMaxLifetime(5 * time.Minute)
+
+// Verify connection
+if err := db.PingContext(ctx); err != nil {
+    log.Fatal("db ping failed:", err)
+}
+
+# Go: sql - query single row
+var u User
+err := db.QueryRowContext(ctx,
+    "SELECT id, name, email FROM users WHERE id = $1", id,
+).Scan(&u.ID, &u.Name, &u.Email)
+if errors.Is(err, sql.ErrNoRows) {
+    return nil, ErrNotFound
+}
+
+# Go: sql - query multiple rows
+rows, err := db.QueryContext(ctx, "SELECT id, name FROM users WHERE active = $1", true)
+if err != nil {
+    return nil, err
+}
+defer rows.Close()
+
+var users []User
+for rows.Next() {
+    var u User
+    if err := rows.Scan(&u.ID, &u.Name); err != nil {
+        return nil, err
+    }
+    users = append(users, u)
+}
+return users, rows.Err()  // always check rows.Err()
+
+# Go: sql - exec (insert/update/delete)
+result, err := db.ExecContext(ctx,
+    "INSERT INTO users (name, email) VALUES ($1, $2)",
+    name, email,
+)
+id, err := result.LastInsertId()     // MySQL
+affected, err := result.RowsAffected()
+
+# Go: sql - transaction
+tx, err := db.BeginTx(ctx, nil)
+if err != nil {
+    return err
+}
+defer tx.Rollback()  // no-op if committed
+
+_, err = tx.ExecContext(ctx, "UPDATE accounts SET balance = balance - $1 WHERE id = $2", amount, fromID)
+if err != nil {
+    return err
+}
+_, err = tx.ExecContext(ctx, "UPDATE accounts SET balance = balance + $1 WHERE id = $2", amount, toID)
+if err != nil {
+    return err
+}
+return tx.Commit()
+
+# Go: sql - prepared statement (reuse for performance)
+stmt, err := db.PrepareContext(ctx, "SELECT id FROM users WHERE email = $1")
+if err != nil {
+    return err
+}
+defer stmt.Close()
+
+row := stmt.QueryRowContext(ctx, email)
+
+# Go: sql - nullable types
+var name sql.NullString
+var age  sql.NullInt64
+row.Scan(&name, &age)
+if name.Valid {
+    fmt.Println(name.String)
+}
+
+$ dsn: echo "postgres://user:pass@localhost:5432/dbname?sslmode=disable"
+
+; ─────────────────────────────────────────────
+; LOGGING
+; ─────────────────────────────────────────────
+
+% golang, go, log, logging, slog, structured
+
+# Go: slog - structured logging (Go 1.21+)
+// Default logger (writes to stderr)
+slog.Info("user created", "id", 123, "name", "Alice")
+slog.Error("query failed", "err", err)
+slog.Debug("request received", "method", r.Method, "path", r.URL.Path)
+slog.Warn("rate limit approaching", "used", 95, "limit", 100)
+
+# Go: slog - custom logger with JSON output
+logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+    Level: slog.LevelDebug,
+    AddSource: true,
+}))
+slog.SetDefault(logger)
+
+# Go: slog - with attrs / group
+logger = logger.With("service", "api", "env", "prod")
+logger = logger.WithGroup("request").With("id", reqID)
+logger.Info("handled", "status", 200, "duration_ms", elapsed.Milliseconds())
+
+# Go: slog - log with context (for trace propagation)
+slog.InfoContext(ctx, "processing", "job_id", id)
+
+# Go: log - stdlib (simple)
+log.Printf("error: %v", err)
+log.Fatalf("fatal: %v", err)  // calls os.Exit(1)
+log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+; ─────────────────────────────────────────────
+; ENVIRONMENT & CONFIG
+; ─────────────────────────────────────────────
+
+% golang, go, env, environment, config, os
+
+# Go: read environment variable
+val := os.Getenv("MY_VAR")                 // "" if not set
+val, ok := os.LookupEnv("MY_VAR")         // ok=false if not set
+
+# Go: set / unset environment variable
+os.Setenv("MY_VAR", "value")
+os.Unsetenv("MY_VAR")
+
+# Go: env with fallback
+func getEnv(key, fallback string) string {
+    if v, ok := os.LookupEnv(key); ok {
+        return v
+    }
+    return fallback
+}
+
+# Go: os - args and executable path
+args := os.Args          // os.Args[0] is program name
+exe, err := os.Executable()
+wd, err := os.Getwd()
+
+# Go: os - exit codes
+os.Exit(0)   // success
+os.Exit(1)   // failure (use log.Fatal for this)
+
+; ─────────────────────────────────────────────
+; DEFER, PANIC, RECOVER
+; ─────────────────────────────────────────────
+
+% golang, go, defer, panic, recover, cleanup
+
+# Go: defer - LIFO execution on function return
+defer f.Close()
+defer wg.Done()
+defer cancel()
+defer func() {
+    // cleanup code
+}()
+
+# Go: defer with loop (watch out - defer runs at end of FUNCTION not loop)
+for _, f := range files {
+    f := f  // capture
+    defer f.Close()  // BAD: all deferred at function end
+}
+// CORRECT: use anonymous function per iteration
+for _, f := range files {
+    func() {
+        defer f.Close()
+        process(f)
+    }()
+}
+
+# Go: panic and recover
+func safeExecute(fn func()) (err error) {
+    defer func() {
+        if r := recover(); r != nil {
+            err = fmt.Errorf("panic: %v\n%s", r, debug.Stack())
+        }
+    }()
+    fn()
+    return nil
+}
+
+// Panic with value:
+panic("something went terribly wrong")
+panic(fmt.Errorf("critical: %w", err))
+
+; ─────────────────────────────────────────────
+; ENCODING / DECODING
+; ─────────────────────────────────────────────
+
+% golang, go, encoding, json, base64, csv, xml
+
+# Go: base64 encode / decode
+encoded := base64.StdEncoding.EncodeToString([]byte("hello"))
+decoded, err := base64.StdEncoding.DecodeString(encoded)
+
+// URL-safe (no padding)
+encoded := base64.URLEncoding.EncodeToString(data)
+encoded := base64.RawURLEncoding.EncodeToString(data)  // no padding
+
+# Go: json - stream encode/decode (large payloads)
+enc := json.NewEncoder(w)
+enc.SetIndent("", "  ")
+enc.Encode(v)
+
+dec := json.NewDecoder(r.Body)
+dec.DisallowUnknownFields()  // strict mode
+err := dec.Decode(&v)
+
+# Go: json - custom marshal/unmarshal
+type MyTime time.Time
+
+func (t MyTime) MarshalJSON() ([]byte, error) {
+    return json.Marshal(time.Time(t).Format(time.RFC3339))
+}
+
+func (t *MyTime) UnmarshalJSON(data []byte) error {
+    var s string
+    if err := json.Unmarshal(data, &s); err != nil {
+        return err
+    }
+    parsed, err := time.Parse(time.RFC3339, s)
+    *t = MyTime(parsed)
+    return err
+}
+
+# Go: CSV read
+f, _ := os.Open("data.csv")
+defer f.Close()
+r := csv.NewReader(f)
+r.TrimLeadingSpace = true
+records, err := r.ReadAll()
+// or row by row:
+for {
+    record, err := r.Read()
+    if err == io.EOF { break }
+}
+
+# Go: CSV write
+w := csv.NewWriter(os.Stdout)
+defer w.Flush()
+w.Write([]string{"name", "age", "email"})
+w.WriteAll(records)
+
+# Go: XML
+type Person struct {
+    XMLName xml.Name `xml:"person"`
+    Name    string   `xml:"name"`
+    Age     int      `xml:"age,attr"`
+}
+
+data, err := xml.Marshal(&p)
+data, err := xml.MarshalIndent(&p, "", "  ")
+err = xml.Unmarshal(data, &p)
+
+; ─────────────────────────────────────────────
+; MODULES & PACKAGES
+; ─────────────────────────────────────────────
+
+% golang, go, module, package, mod, dep, dependency
+
+# Go: module commands
+// go mod init <module-path>
+// go mod tidy                   add missing / remove unused deps
+// go mod download               download deps to cache
+// go mod verify                 verify checksums
+// go mod vendor                 copy deps to ./vendor
+// go list -m all                list all deps
+// go get <pkg>@<version>        add or update dep
+// go get <pkg>@latest           get latest version
+// go get <pkg>@none             remove dep
+
+# Go: build and run
+// go build ./...                build all packages
+// go run .                      run main package
+// go run ./cmd/server           run specific command
+// go vet ./...                  static analysis
+// go clean -testcache           clear test cache
+
+# Go: workspace (Go 1.18+)
+// go work init ./module1 ./module2
+// go work use ./module3
+
+# Go: cross-compilation
+// GOOS=linux GOARCH=amd64 go build -o bin/server .
+// GOOS=windows GOARCH=amd64 go build -o bin/server.exe .
+// GOOS=darwin GOARCH=arm64 go build -o bin/server-mac .
+
+# Go: build tags
+//go:build linux && amd64
+// (first line of file, before package declaration)
+
+// go build -tags integration ./...
+
+# Go: ldflags (embed version at build time)
+// go build -ldflags="-X main.version=1.2.3 -X main.commit=$(git rev-parse HEAD)"
+var (
+    version = "dev"
+    commit  = "none"
+)
