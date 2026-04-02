@@ -1,0 +1,323 @@
+% laravel, php, artisan, cli
+
+# create controller
+php artisan make:controller <Name>Controller
+
+# create model
+php artisan make:model <Name>
+
+# create model with migration
+php artisan make:model <Name> -m
+
+# create migration
+php artisan make:migration create_<table>_table
+
+# run migration
+php artisan migrate
+
+# rollback migration
+php artisan migrate:rollback
+
+# fresh migrate
+php artisan migrate:fresh --seed
+
+# create seeder
+php artisan make:seeder <Name>Seeder
+
+# run seeder
+php artisan db:seed --class=<Name>Seeder
+
+# create factory
+php artisan make:factory <Name>Factory
+
+# clear cache
+php artisan cache:clear
+
+# route list
+php artisan route:list
+
+# serve app
+php artisan serve
+
+---
+
+% laravel, routing, web, api
+
+# basic route
+Route::get('/path', fn() => 'ok');
+
+# route with controller
+Route::get('/users', [UserController::class, 'index']);
+
+# route parameter
+Route::get('/users/{id}', fn($id) => $id);
+
+# route name
+Route::get('/users', ...)->name('users.index');
+
+# route group
+Route::prefix('api')->group(function () {
+    Route::get('/users', ...);
+});
+
+# middleware
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', ...);
+});
+
+# api resource
+Route::apiResource('users', UserController::class);
+
+---
+
+% laravel, controller, request
+
+# get input
+$request->input('key')
+
+# get all input
+$request->all()
+
+# validate request
+$request->validate([
+  'name' => 'required|string',
+  'email' => 'required|email'
+])
+
+# get query param
+$request->query('key')
+
+---
+
+% laravel, eloquent, model, database
+
+# get all
+User::all()
+
+# find by id
+User::find($id)
+
+# find or fail
+User::findOrFail($id)
+
+# where condition
+User::where('email', $email)->get()
+
+# first record
+User::where('email', $email)->first()
+
+# create record
+User::create([
+  'name' => $name
+])
+
+# update record
+$user->update(['name' => $name])
+
+# delete record
+$user->delete()
+
+# mass update
+User::where(...)->update([...])
+
+# count
+User::count()
+
+# exists
+User::where(...)->exists()
+
+---
+
+% laravel, eloquent, relationship
+
+# one to many
+return $this->hasMany(Post::class)
+
+# belongs to
+return $this->belongsTo(User::class)
+
+# eager loading
+User::with('posts')->get()
+
+# lazy load
+$user->load('posts')
+
+# count relation
+User::withCount('posts')->get()
+
+---
+
+% laravel, query-builder, database
+
+# raw query
+DB::select('SELECT * FROM users')
+
+# insert
+DB::table('users')->insert([...])
+
+# update
+DB::table('users')->where(...)->update([...])
+
+# delete
+DB::table('users')->where(...)->delete()
+
+# transaction
+DB::transaction(function () {
+    // logic
+})
+
+---
+
+% laravel, validation, request
+
+# validator manual
+Validator::make($data, [
+  'email' => 'required|email'
+])
+
+# custom message
+'email.required' => 'Email wajib'
+
+---
+
+% laravel, auth, middleware
+
+# get authenticated user
+auth()->user()
+
+# check auth
+auth()->check()
+
+# middleware in controller
+$this->middleware('auth')
+
+---
+
+% laravel, response, api
+
+# json response
+return response()->json($data)
+
+# status code
+return response()->json($data, 201)
+
+# abort
+abort(404)
+
+---
+
+% laravel, blade, view
+
+# return view
+return view('home')
+
+# pass data
+return view('home', ['user' => $user])
+
+# echo variable
+{{ $var }}
+
+# loop
+@foreach ($items as $item)
+@endforeach
+
+---
+
+% laravel, migration, schema
+
+# create table
+Schema::create('users', function (Blueprint $table) {
+  $table->id();
+  $table->string('name');
+  $table->timestamps();
+})
+
+# add column
+$table->string('email')
+
+# drop column
+$table->dropColumn('email')
+
+---
+
+% laravel, queue, job
+
+# create job
+php artisan make:job <Name>Job
+
+# dispatch job
+dispatch(new <Name>Job())
+
+# queue connection
+QUEUE_CONNECTION=redis
+
+---
+
+% laravel, cache, redis
+
+# put cache
+Cache::put('key', $value, 60)
+
+# get cache
+Cache::get('key')
+
+# remember
+Cache::remember('key', 60, fn() => ...)
+
+---
+
+% laravel, filesystem, storage
+
+# store file
+$request->file('file')->store('uploads')
+
+# store with disk
+Storage::disk('s3')->put('file.txt', $content)
+
+# get file
+Storage::get('file.txt')
+
+---
+
+% laravel, env, config
+
+# get env
+env('APP_NAME')
+
+# config
+config('app.name')
+
+# set config runtime
+config(['app.name' => 'New'])
+
+---
+
+% laravel, helper, utility
+
+# dump
+dd($var)
+
+# dump without die
+dump($var)
+
+# string helper
+Str::slug('Hello World')
+
+# uuid
+Str::uuid()
+
+# now
+now()
+
+---
+
+% laravel, testing, phpunit
+
+# run test
+php artisan test
+
+# specific test
+php artisan test --filter=<TestName>
+
+# assert response
+$response->assertStatus(200)

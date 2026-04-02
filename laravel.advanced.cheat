@@ -1,0 +1,309 @@
+% laravel, architecture, service, pattern
+
+# service class example
+class UserService {
+  public function create(array $data) {
+    return User::create($data);
+  }
+}
+
+# usage in controller
+$user = app(UserService::class)->create($data)
+
+# bind interface to implementation
+$this->app->bind(UserRepository::class, EloquentUserRepository::class)
+
+---
+
+% laravel, repository, pattern, eloquent
+
+# repository interface
+interface UserRepository {
+  public function findById($id);
+}
+
+# repository implementation
+class EloquentUserRepository implements UserRepository {
+  public function findById($id) {
+    return User::findOrFail($id);
+  }
+}
+
+---
+
+% laravel, dto, data, pattern
+
+# simple dto
+class CreateUserDTO {
+  public function __construct(
+    public string $name,
+    public string $email
+  ) {}
+}
+
+# usage
+$dto = new CreateUserDTO(...$request->only(['name','email']))
+
+---
+
+% laravel, api, resource, transformer
+
+# api resource
+return new UserResource($user)
+
+# resource collection
+return UserResource::collection($users)
+
+# resource structure
+return [
+  'id' => $this->id,
+  'name' => $this->name
+]
+
+---
+
+% laravel, event, listener, async
+
+# create event
+php artisan make:event UserCreated
+
+# create listener
+php artisan make:listener SendEmail
+
+# dispatch event
+event(new UserCreated($user))
+
+---
+
+% laravel, job, queue, async
+
+# dispatch job to queue
+dispatch(new ProcessJob())->onQueue('high')
+
+# delay job
+dispatch(new ProcessJob())->delay(now()->addMinutes(5))
+
+# retry config
+public $tries = 3;
+
+---
+
+% laravel, performance, eager, n+1
+
+# avoid n+1
+User::with('posts')->get()
+
+# nested eager loading
+User::with('posts.comments')->get()
+
+# condition eager
+User::with(['posts' => fn($q) => $q->where('active', 1)])
+
+---
+
+% laravel, performance, query, index
+
+# select specific columns
+User::select('id','name')->get()
+
+# chunk processing
+User::chunk(100, fn($users) => ...)
+
+# cursor (low memory)
+foreach (User::cursor() as $user) {}
+
+---
+
+% laravel, performance, cache, strategy
+
+# cache query
+Cache::remember('users', 60, fn() => User::all())
+
+# cache forever
+Cache::forever('key', $value)
+
+# invalidate cache
+Cache::forget('key')
+
+---
+
+% laravel, performance, database, transaction
+
+# manual transaction
+DB::beginTransaction();
+try {
+  // logic
+  DB::commit();
+} catch (\Throwable $e) {
+  DB::rollBack();
+  throw $e;
+}
+
+---
+
+% laravel, security, validation
+
+# strict validation
+$request->validate([
+  'email' => ['required','email','max:255']
+])
+
+# sanitize input
+$data = $request->only(['name','email'])
+
+---
+
+% laravel, security, auth, token
+
+# sanctum token
+$user->createToken('api')->plainTextToken
+
+# protect route
+Route::middleware('auth:sanctum')->get(...)
+
+---
+
+% laravel, security, rate-limit
+
+# rate limit
+Route::middleware('throttle:60,1')->group(function () {
+  Route::post('/login', ...);
+});
+
+---
+
+% laravel, error, handling, exception
+
+# custom exception
+throw new \Exception('error')
+
+# api error response
+return response()->json([
+  'message' => 'error'
+], 400)
+
+---
+
+% laravel, logging, debug
+
+# log info
+Log::info('message')
+
+# log error
+Log::error('error', ['context' => $data])
+
+---
+
+% laravel, filesystem, upload
+
+# store public file
+$request->file('file')->store('uploads', 'public')
+
+# get url
+Storage::url('uploads/file.jpg')
+
+---
+
+% laravel, testing, feature
+
+# feature test
+$response = $this->get('/api/users')
+
+# assert json
+$response->assertJsonStructure(['data'])
+
+---
+
+% laravel, pagination, api
+
+# paginate
+User::paginate(10)
+
+# simple paginate
+User::simplePaginate(10)
+
+---
+
+% laravel, collection, helper
+
+# collect
+collect([1,2,3])->map(fn($x) => $x * 2)
+
+# group collection
+collect($data)->groupBy('status')
+
+---
+
+% laravel, command, cron, scheduler
+
+# create command
+php artisan make:command SyncData
+
+# schedule job
+$schedule->command('sync:data')->hourly()
+
+---
+
+% laravel, config, environment
+
+# config caching
+php artisan config:cache
+
+# route caching
+php artisan route:cache
+
+# clear config
+php artisan config:clear
+
+---
+
+% laravel, optimization, production
+
+# optimize
+php artisan optimize
+
+# queue worker
+php artisan queue:work
+
+# horizon (if installed)
+php artisan horizon
+
+---
+
+% laravel, api, best-practice, controller
+
+# thin controller
+public function store(Request $request) {
+  $dto = new CreateUserDTO(...$request->validated());
+  return $this->service->create($dto);
+}
+
+---
+
+% laravel, clean-code, pattern
+
+# service + repo flow
+Controller -> Service -> Repository -> Model
+
+# avoid fat controller
+# avoid business logic in model
+# isolate domain logic in service
+
+---
+
+% laravel, redis, queue, scaling
+
+# redis connection
+REDIS_HOST=127.0.0.1
+
+# queue worker scaling
+php artisan queue:work --queue=high,default --tries=3
+
+---
+
+% laravel, api, versioning
+
+# api versioning
+Route::prefix('v1')->group(function () {
+  Route::apiResource('users', UserController::class);
+});

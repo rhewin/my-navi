@@ -1,4 +1,13 @@
-% postgres, common
+% postgres, psql, cli, meta
+
+# connect database
+psql -U <user> -d <db>
+
+# list databases
+\l
+
+# connect db
+\c <db>
 
 # list tables
 \dt
@@ -6,33 +15,335 @@
 # describe table
 \d <table>
 
+# describe table detailed
+\d+ <table>
+
+# list indexes
+\di
+
+---
+
+% postgres, table, ddl
+
 # create table
 CREATE TABLE <table> (
-    id SERIAL PRIMARY KEY
-)
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT now()
+);
+
+# alter add column
+ALTER TABLE <table> ADD COLUMN <column> TEXT;
+
+# alter drop column
+ALTER TABLE <table> DROP COLUMN <column>;
+
+# rename column
+ALTER TABLE <table> RENAME COLUMN old TO new;
+
+# drop table
+DROP TABLE <table>;
+
+---
+
+% postgres, crud, basic
 
 # insert
 INSERT INTO <table>(<column>)
-VALUES (<value>)
+VALUES (<value>);
+
+# insert returning
+INSERT INTO <table>(name)
+VALUES ('john')
+RETURNING *;
 
 # select
-SELECT * FROM <table>
+SELECT * FROM <table>;
+
+# select specific column
+SELECT id, name FROM <table>;
 
 # select with condition
 SELECT * FROM <table>
-WHERE <column> = <value>
+WHERE <column> = <value>;
 
 # update
 UPDATE <table>
 SET <column>=<value>
-WHERE <condition>
+WHERE <condition>;
 
 # delete
 DELETE FROM <table>
-WHERE <condition>
+WHERE <condition>;
 
-# postgres docker
+---
+
+% postgres, query, join
+
+# inner join
+SELECT *
+FROM a
+JOIN b ON a.id = b.a_id;
+
+# left join
+SELECT *
+FROM a
+LEFT JOIN b ON a.id = b.a_id;
+
+# join multiple
+SELECT *
+FROM a
+JOIN b ON ...
+JOIN c ON ...;
+
+---
+
+% postgres, query, aggregation
+
+# count
+SELECT COUNT(*) FROM <table>;
+
+# group by
+SELECT status, COUNT(*)
+FROM <table>
+GROUP BY status;
+
+# having
+SELECT status, COUNT(*)
+FROM <table>
+GROUP BY status
+HAVING COUNT(*) > 10;
+
+# sum / avg
+SELECT SUM(amount), AVG(amount)
+FROM <table>;
+
+---
+
+% postgres, query, sorting, pagination
+
+# order by asc
+SELECT * FROM <table>
+ORDER BY created_at ASC;
+
+# order by desc
+SELECT * FROM <table>
+ORDER BY created_at DESC;
+
+# bad pagination (offset)
+SELECT * FROM <table>
+ORDER BY id
+LIMIT 10 OFFSET 100000;
+
+# good pagination (cursor)
+SELECT * FROM <table>
+WHERE id > <last_id>
+ORDER BY id
+LIMIT 10;
+
+---
+
+% postgres, index, strategy
+
+# create index
+CREATE INDEX idx_<table>_<column> ON <table>(<column>);
+
+# composite index
+CREATE INDEX idx_<table>_<col1>_<col2> ON <table>(<col1>, <col2);
+
+# unique index
+CREATE UNIQUE INDEX idx_<table>_<column> ON <table>(<column>);
+
+# partial index
+CREATE INDEX idx_<table>_partial
+ON <table>(<column>)
+WHERE <condition>;
+
+# covering index
+CREATE INDEX idx_<table>_cover
+ON <table>(<column>)
+INCLUDE (<other_column>);
+
+# drop index
+DROP INDEX <index>;
+
+---
+
+% postgres, performance, explain
+
+# explain query plan
+EXPLAIN <query>;
+
+# explain analyze (actual execution)
+EXPLAIN ANALYZE <query>;
+
+# explain with buffers
+EXPLAIN (ANALYZE, BUFFERS) <query>;
+
+---
+
+% postgres, performance, diagnose
+
+# detect sequential scan
+EXPLAIN ANALYZE SELECT * FROM <table>;
+
+# check index usage
+SELECT * FROM pg_stat_user_indexes;
+
+# table size
+SELECT pg_size_pretty(pg_total_relation_size('<table>'));
+
+# detect bad estimation
+EXPLAIN ANALYZE <query>;
+
+# fix planner stats
+ANALYZE <table>;
+
+---
+
+% postgres, performance, slow-query
+
+# enable extension
+CREATE EXTENSION pg_stat_statements;
+
+# top slow queries
+SELECT query, calls, total_time, mean_time
+FROM pg_stat_statements
+ORDER BY total_time DESC
+LIMIT 10;
+
+# reset stats
+SELECT pg_stat_statements_reset();
+
+---
+
+% postgres, transaction, locking
+
+# begin transaction
+BEGIN;
+
+# row lock
+SELECT * FROM <table>
+WHERE id = <id>
+FOR UPDATE;
+
+# commit
+COMMIT;
+
+# rollback
+ROLLBACK;
+
+---
+
+% postgres, lock, debug
+
+# check locks
+SELECT * FROM pg_locks;
+
+# blocking queries
+SELECT *
+FROM pg_stat_activity
+WHERE wait_event IS NOT NULL;
+
+---
+
+% postgres, json, advanced
+
+# json field query
+SELECT data->>'key'
+FROM <table>;
+
+# json filter
+SELECT *
+FROM <table>
+WHERE data->>'status' = 'active';
+
+# json contains
+SELECT *
+FROM <table>
+WHERE data @> '{"key":"value"}';
+
+---
+
+% postgres, upsert, conflict
+
+# upsert
+INSERT INTO <table>(id, name)
+VALUES (1, 'john')
+ON CONFLICT (id)
+DO UPDATE SET name = EXCLUDED.name;
+
+---
+
+% postgres, cte, advanced
+
+# common table expression
+WITH temp AS (
+  SELECT * FROM <table>
+)
+SELECT * FROM temp;
+
+---
+
+% postgres, maintenance
+
+# analyze table
+ANALYZE <table>;
+
+# vacuum
+VACUUM;
+
+# vacuum full
+VACUUM FULL;
+
+---
+
+% postgres, advanced, performance
+
+# materialized view
+CREATE MATERIALIZED VIEW <name> AS
+SELECT ...;
+
+# refresh materialized view
+REFRESH MATERIALIZED VIEW <name>;
+
+---
+
+% postgres, performance, checklist
+
+# debugging checklist
+-- 1. EXPLAIN ANALYZE
+-- 2. Check Seq Scan
+-- 3. Check rows vs actual
+-- 4. Add index
+-- 5. Re-run
+
+---
+
+% postgres, docker, setup
+
+# run postgres
 docker run -d \
--p 5432:5432 \
--e POSTGRES_PASSWORD=<password> \
-postgres
+  -p 5432:5432 \
+  -e POSTGRES_PASSWORD=<password> \
+  postgres
+
+# run with volume
+docker run -d \
+  -p 5432:5432 \
+  -e POSTGRES_PASSWORD=<password> \
+  -v pgdata:/var/lib/postgresql/data \
+  postgres
+
+---
+
+% postgres, user, permission
+
+# create user
+CREATE USER <user> WITH PASSWORD '<password>';
+
+# grant privilege
+GRANT ALL PRIVILEGES ON TABLE <table> TO <user>;
+
+# grant db
+GRANT ALL PRIVILEGES ON DATABASE <db> TO <user>;
