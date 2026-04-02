@@ -1,10 +1,44 @@
-% js, common
+% js, javascript, common, string
 
 # split string
 <string>.split(<delimiter>)
 
 # join array
 <array>.join(<delimiter>)
+
+# trim string
+<string>.trim()
+
+# to upper case
+<string>.toUpperCase()
+
+# to lower case
+<string>.toLowerCase()
+
+# replace string
+<string>.replace(<search>, <replace>)
+
+# replace all
+<string>.replaceAll(<search>, <replace>)
+
+# includes substring
+<string>.includes(<substring>)
+
+# string to number
+Number(<string>)
+
+# string to int
+parseInt(<string>, 10)
+
+# string to float
+parseFloat(<string>)
+
+# number to string
+<number>.toString()
+
+---
+
+% js, javascript, array, common
 
 # map array
 <array>.map(x => x)
@@ -15,8 +49,70 @@
 # find item
 <array>.find(x => x.id === <id>)
 
+# find index
+<array>.findIndex(x => x.id === <id>)
+
+# check exists
+<array>.some(x => x.id === <id>)
+
+# check all match
+<array>.every(x => x.active)
+
+# reduce array
+<array>.reduce((acc, x) => acc + x, 0)
+
+# flatten array
+<array>.flat()
+
+# flatten deep
+<array>.flat(Infinity)
+
 # remove duplicates
 [...new Set(<array>)]
+
+# sort ascending
+<array>.sort((a, b) => a - b)
+
+# sort descending
+<array>.sort((a, b) => b - a)
+
+# group by
+Object.groupBy(<array>, x => x.<key>)
+
+---
+
+% js, javascript, object, common
+
+# object keys
+Object.keys(<object>)
+
+# object values
+Object.values(<object>)
+
+# object entries
+Object.entries(<object>)
+
+# from entries
+Object.fromEntries(<entries>)
+
+# clone object shallow
+{ ...<object> }
+
+# merge objects
+{ ...obj1, ...obj2 }
+
+# check property exists
+<object>.hasOwnProperty(<key>)
+
+# optional chaining
+<object>?.<key>?.<nested>
+
+# nullish coalescing
+<value> ?? <default>
+
+---
+
+% js, javascript, json, conversion
 
 # parse json
 JSON.parse(<json>)
@@ -24,7 +120,156 @@ JSON.parse(<json>)
 # stringify json
 JSON.stringify(<object>)
 
-# async fetch
+# stringify pretty
+JSON.stringify(<object>, null, 2)
+
+---
+
+% js, javascript, async, promise, fetch
+
+# async fetch (promise)
 fetch("<url>")
-.then(res => res.json())
-.then(data => console.log(data))
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err))
+
+# async fetch (async/await)
+const res = await fetch("<url>")
+const data = await res.json()
+
+# parallel requests
+await Promise.all([fn1(), fn2()])
+
+# handle promise
+try {
+  const res = await <promise>
+} catch (err) {
+  console.error(err)
+}
+
+# delay / sleep
+await new Promise(r => setTimeout(r, <ms>))
+
+---
+
+% js, javascript, date, time
+
+# current timestamp
+Date.now()
+
+# current date
+new Date()
+
+# to ISO string
+new Date().toISOString()
+
+# parse date
+new Date(<dateString>)
+
+# add days
+const d = new Date()
+d.setDate(d.getDate() + <days>)
+
+---
+
+% js, javascript, number, math
+
+# random number
+Math.random()
+
+# random int
+Math.floor(Math.random() * <max>)
+
+# round
+Math.round(<number>)
+
+# floor
+Math.floor(<number>)
+
+# ceil
+Math.ceil(<number>)
+
+# to fixed decimal
+<number>.toFixed(<digits>)
+
+---
+
+% js, javascript, boolean, check
+
+# truthy check
+if (<value>) {}
+
+# boolean cast
+Boolean(<value>)
+!!<value>
+
+# is array
+Array.isArray(<value>)
+
+# is number
+!isNaN(<value>)
+
+---
+
+% js, javascript, utility, common
+
+# default value
+const x = <value> || <default>
+
+# safe default (null/undefined only)
+const x = <value> ?? <default>
+
+# destructuring object
+const { a, b } = <object>
+
+# destructuring array
+const [a, b] = <array>
+
+# swap variables
+[a, b] = [b, a]
+
+# dynamic object key
+const obj = { [key]: value }
+
+---
+
+% js, javascript, regex, string
+
+# test regex
+/<pattern>/.test(<string>)
+
+# match regex
+<string>.match(/<pattern>/g)
+
+# replace regex
+<string>.replace(/<pattern>/g, <replace>)
+
+---
+
+% js, javascript, node, process
+
+# env variable
+process.env.<KEY>
+
+# exit process
+process.exit(1)
+
+# current working dir
+process.cwd()
+
+---
+
+% js, javascript, debug, console
+
+# log
+console.log(<value>)
+
+# error
+console.error(<value>)
+
+# table
+console.table(<array>)
+
+# time execution
+console.time("label")
+console.timeEnd("label")
