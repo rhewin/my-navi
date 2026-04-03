@@ -1,0 +1,299 @@
+% tailwind, layout, flex, grid
+
+# flex row
+flex flex-row
+
+# flex column
+flex flex-col
+
+# center (flex)
+flex items-center justify-center
+
+# space between
+flex justify-between
+
+# flex wrap
+flex flex-wrap
+
+# grid basic
+grid grid-cols-2 gap-4
+
+# grid 3 columns
+grid grid-cols-3
+
+# grid responsive
+grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4
+
+---
+
+% tailwind, spacing, margin, padding
+
+# margin
+m-4
+
+# margin x axis
+mx-4
+
+# margin y axis
+my-4
+
+# padding
+p-4
+
+# padding x
+px-4
+
+# padding y
+py-4
+
+# gap
+gap-4
+
+---
+
+% tailwind, size, width, height
+
+# width full
+w-full
+
+# height full
+h-full
+
+# fixed width
+w-64
+
+# screen height
+h-screen
+
+# max width container
+max-w-7xl mx-auto
+
+---
+
+% tailwind, typography, text
+
+# text size
+text-sm
+text-lg
+text-xl
+
+# font weight
+font-bold
+
+# text color
+text-gray-500
+
+# text align
+text-center
+
+# truncate
+truncate
+
+---
+
+% tailwind, background, color
+
+# background color
+bg-blue-500
+
+# hover background
+hover:bg-blue-600
+
+# gradient
+bg-gradient-to-r from-blue-500 to-purple-500
+
+---
+
+% tailwind, border, radius, shadow
+
+# border
+border
+
+# border color
+border-gray-200
+
+# rounded
+rounded
+
+# rounded large
+rounded-lg
+
+# shadow
+shadow
+
+# shadow large
+shadow-lg
+
+---
+
+% tailwind, position, layout
+
+# relative
+relative
+
+# absolute
+absolute
+
+# fixed
+fixed
+
+# top right
+top-0 right-0
+
+# z-index
+z-10
+
+---
+
+% tailwind, display, visibility
+
+# hidden
+hidden
+
+# block
+block
+
+# inline block
+inline-block
+
+# overflow
+overflow-hidden
+
+# scroll
+overflow-auto
+
+---
+
+% tailwind, responsive, breakpoint
+
+# mobile first
+text-sm md:text-lg
+
+# hide on mobile
+hidden md:block
+
+# show on mobile only
+block md:hidden
+
+---
+
+% tailwind, state, hover, focus
+
+# hover
+hover:bg-gray-100
+
+# focus
+focus:outline-none
+
+# active
+active:scale-95
+
+# disabled
+disabled:opacity-50
+
+---
+
+% tailwind, animation, transition
+
+# transition
+transition
+
+# duration
+duration-300
+
+# ease
+ease-in-out
+
+# hover scale
+hover:scale-105
+
+---
+
+% tailwind, form, input
+
+# input basic
+border rounded px-4 py-2 w-full
+
+# input focus
+focus:ring-2 focus:ring-blue-500
+
+# button
+bg-blue-500 text-white px-4 py-2 rounded
+
+---
+
+% tailwind, component, card
+
+# card
+bg-white shadow rounded p-4
+
+# card with hover
+bg-white shadow rounded p-4 hover:shadow-lg transition
+
+---
+
+% tailwind, component, button
+
+# primary button
+bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600
+
+# secondary button
+bg-gray-200 px-4 py-2 rounded hover:bg-gray-300
+
+---
+
+% tailwind, component, navbar
+
+# navbar container
+flex items-center justify-between p-4 bg-white shadow
+
+---
+
+% tailwind, component, modal
+
+# modal overlay
+fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center
+
+# modal content
+bg-white p-6 rounded shadow-lg
+
+---
+
+% tailwind, dark-mode
+
+# enable dark mode class
+dark:bg-gray-900
+
+# dark text
+dark:text-white
+
+---
+
+% tailwind, utility, common
+
+# center container
+mx-auto
+
+# full screen center
+flex items-center justify-center h-screen
+
+# cursor pointer
+cursor-pointer
+
+# select none
+select-none
+
+---
+
+% tailwind, best-practice, pattern
+
+# combine utility
+flex items-center justify-between px-4 py-2
+
+# avoid long class
+# extract component or use @apply
+
+# use responsive early
+md:flex lg:grid
+
+# prefer composition over custom css

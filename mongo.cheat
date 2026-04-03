@@ -1,0 +1,291 @@
+% mongodb, mongo, cli, shell
+
+# connect
+mongosh
+
+# show databases
+show dbs
+
+# use database
+use <db>
+
+# show collections
+show collections
+
+---
+
+% mongodb, crud, basic
+
+# insert one
+db.<collection>.insertOne({
+  name: "john"
+})
+
+# insert many
+db.<collection>.insertMany([
+  { name: "john" },
+  { name: "doe" }
+])
+
+# find all
+db.<collection>.find()
+
+# find with condition
+db.<collection>.find({ name: "john" })
+
+# find one
+db.<collection>.findOne({ name: "john" })
+
+# update one
+db.<collection>.updateOne(
+  { _id: <id> },
+  { $set: { name: "new" } }
+)
+
+# update many
+db.<collection>.updateMany(
+  { status: "active" },
+  { $set: { status: "inactive" } }
+)
+
+# delete one
+db.<collection>.deleteOne({ _id: <id> })
+
+# delete many
+db.<collection>.deleteMany({ status: "inactive" })
+
+---
+
+% mongodb, query, operators
+
+# equal
+{ field: value }
+
+# not equal
+{ field: { $ne: value } }
+
+# greater than
+{ field: { $gt: value } }
+
+# less than
+{ field: { $lt: value } }
+
+# in array
+{ field: { $in: [1,2,3] } }
+
+# regex
+{ name: { $regex: "john", $options: "i" } }
+
+---
+
+% mongodb, projection, select
+
+# include fields
+db.<collection>.find({}, { name: 1, email: 1 })
+
+# exclude fields
+db.<collection>.find({}, { password: 0 })
+
+---
+
+% mongodb, sorting, pagination
+
+# sort asc
+db.<collection>.find().sort({ createdAt: 1 })
+
+# sort desc
+db.<collection>.find().sort({ createdAt: -1 })
+
+# limit
+db.<collection>.find().limit(10)
+
+# skip (bad for large data)
+db.<collection>.find().skip(10000).limit(10)
+
+# cursor pagination (good)
+db.<collection>.find({ _id: { $gt: lastId } })
+  .sort({ _id: 1 })
+  .limit(10)
+
+---
+
+% mongodb, aggregation, pipeline
+
+# basic aggregation
+db.<collection>.aggregate([
+  { $match: { status: "active" } },
+  { $group: { _id: "$status", count: { $sum: 1 } } }
+])
+
+# project fields
+{ $project: { name: 1, total: 1 } }
+
+# sort
+{ $sort: { createdAt: -1 } }
+
+# limit
+{ $limit: 10 }
+
+---
+
+% mongodb, aggregation, join
+
+# lookup (join)
+db.orders.aggregate([
+  {
+    $lookup: {
+      from: "users",
+      localField: "userId",
+      foreignField: "_id",
+      as: "user"
+    }
+  }
+])
+
+---
+
+% mongodb, index, performance
+
+# create index
+db.<collection>.createIndex({ field: 1 })
+
+# compound index
+db.<collection>.createIndex({ field1: 1, field2: -1 })
+
+# unique index
+db.<collection>.createIndex({ email: 1 }, { unique: true })
+
+# drop index
+db.<collection>.dropIndex("<index_name>")
+
+# list indexes
+db.<collection>.getIndexes()
+
+---
+
+% mongodb, performance, explain
+
+# explain query
+db.<collection>.find({ field: value }).explain("executionStats")
+
+# aggregation explain
+db.<collection>.aggregate([...]).explain("executionStats")
+
+---
+
+% mongodb, performance, stats
+
+# collection stats
+db.<collection>.stats()
+
+# database stats
+db.stats()
+
+# index usage
+db.<collection>.aggregate([{ $indexStats: {} }])
+
+---
+
+% mongodb, performance, slow-query
+
+# profiler enable
+db.setProfilingLevel(1, { slowms: 100 })
+
+# get slow queries
+db.system.profile.find().sort({ ts: -1 }).limit(5)
+
+---
+
+% mongodb, update, operators
+
+# increment
+{ $inc: { balance: 100 } }
+
+# push array
+{ $push: { items: "new" } }
+
+# add to set
+{ $addToSet: { items: "unique" } }
+
+# pull from array
+{ $pull: { items: "remove" } }
+
+---
+
+% mongodb, upsert
+
+# upsert
+db.<collection>.updateOne(
+  { email: "test@mail.com" },
+  { $set: { name: "john" } },
+  { upsert: true }
+)
+
+---
+
+% mongodb, transaction, advanced
+
+# start transaction
+session = db.getMongo().startSession()
+session.startTransaction()
+
+# commit
+session.commitTransaction()
+
+# abort
+session.abortTransaction()
+
+---
+
+% mongodb, schema, design
+
+# embedded document
+{
+  user: {
+    name: "john"
+  }
+}
+
+# reference
+{
+  userId: ObjectId("...")
+}
+
+---
+
+% mongodb, performance, anti-pattern
+
+# avoid unindexed query
+db.<collection>.find({ email: "test" })
+
+# avoid large skip
+.skip(100000)
+
+# avoid large document (>16MB)
+
+---
+
+% mongodb, performance, checklist
+
+# debugging checklist
+-- 1. explain("executionStats")
+-- 2. check COLLSCAN
+-- 3. add index
+-- 4. reduce scanned docs
+-- 5. re-run
+
+---
+
+% mongodb, docker, setup
+
+# run mongodb
+docker run -d \
+  -p 27017:27017 \
+  --name mongo \
+  mongo
+
+# with volume
+docker run -d \
+  -p 27017:27017 \
+  -v mongodata:/data/db \
+  mongo
