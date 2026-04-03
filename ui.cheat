@@ -24,14 +24,13 @@
 
 % ui, dropdown, tailwind, css
 
-# dropdown (focus)
+# dropdown
 <div tabindex="0" class="relative inline-block group">
   <button class="px-4 py-2 bg-gray-200 rounded">
     Menu
   </button>
 
-  <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow
-              hidden group-focus-within:block">
+  <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow hidden group-focus-within:block">
     <div class="px-4 py-2 hover:bg-gray-100">Profile</div>
     <div class="px-4 py-2 hover:bg-gray-100">Logout</div>
   </div>
@@ -39,113 +38,9 @@
 
 ---
 
-% ui, tabs, tailwind, css
-
-# tabs (radio)
-<input type="radio" name="tab-group" id="tab-one" class="hidden peer/tab1" checked>
-<input type="radio" name="tab-group" id="tab-two" class="hidden peer/tab2">
-
-<div class="flex gap-4 border-b mb-4">
-  <label for="tab-one" class="cursor-pointer pb-2">Tab 1</label>
-  <label for="tab-two" class="cursor-pointer pb-2">Tab 2</label>
-</div>
-
-<div>
-  <div class="hidden peer-checked/tab1:block">Content 1</div>
-  <div class="hidden peer-checked/tab2:block">Content 2</div>
-</div>
-
----
-
-% ui, accordion, tailwind, css
-
-# accordion
-<input type="checkbox" id="accordion-toggle" class="hidden peer">
-
-<label for="accordion-toggle"
-  class="block px-4 py-2 bg-gray-100 cursor-pointer">
-  Accordion Title
-</label>
-
-<div class="max-h-0 overflow-hidden peer-checked:max-h-40 transition-all px-4">
-  Accordion content
-</div>
-
----
-
-% ui, drawer, sidebar, tailwind, css
-
-# drawer
-<input type="checkbox" id="drawer-toggle" class="hidden peer">
-
-<label for="drawer-toggle"
-  class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">
-  Toggle Menu
-</label>
-
-<div class="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white
-            -translate-x-full peer-checked:translate-x-0 transition-transform">
-  <div class="p-4">Sidebar</div>
-</div>
-
----
-
-% ui, tooltip, tailwind
-
-# tooltip
-<div class="relative group inline-block">
-  <button class="px-3 py-1 bg-gray-200 rounded">Hover</button>
-
-  <div class="absolute bottom-full mb-2 hidden group-hover:block
-              bg-black text-white text-xs px-2 py-1 rounded">
-    Tooltip text
-  </div>
-</div>
-
----
-
-% ui, toggle, switch, tailwind
-
-# toggle switch
-<label class="inline-flex items-center cursor-pointer">
-  <input type="checkbox" class="sr-only peer">
-  <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-blue-500 relative">
-    <div class="absolute top-1 left-1 w-3 h-3 bg-white rounded-full
-                transition peer-checked:translate-x-5"></div>
-  </div>
-</label>
-
----
-
 % ui, table, tailwind
 
-# data table (static)
-<div class="bg-white p-4 rounded shadow">
-  <table class="w-full text-left">
-    <thead class="bg-gray-100">
-      <tr>
-        <th class="p-2">Name</th>
-        <th class="p-2">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="border-t hover:bg-gray-50">
-        <td class="p-2">John Doe</td>
-        <td class="p-2">
-          <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded">
-            Active
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
----
-
-% ui, table, sort, js
-
-# table (sortable)
+# table
 <table class="w-full border" id="user-table">
   <thead class="bg-gray-100">
     <tr>
@@ -160,10 +55,14 @@
 
 <script>
 function sortUserTable() {
-  const tbody = document.querySelector("#user-table tbody");
-  const rows = Array.from(tbody.rows);
-  rows.sort((a, b) => a.innerText.localeCompare(b.innerText));
-  rows.forEach(row => tbody.appendChild(row));
+  var tbody = document.querySelector("#user-table tbody");
+  var rows = Array.from(tbody.rows);
+  rows.sort(function(a, b){
+    return a.innerText.localeCompare(b.innerText);
+  });
+  rows.forEach(function(row){
+    tbody.appendChild(row);
+  });
 }
 </script>
 
@@ -175,19 +74,22 @@ function sortUserTable() {
 <div id="bar-chart" class="flex items-end gap-2 h-40"></div>
 
 <script>
-const chartData = [12, 30, 18, 45];
-const chartEl = document.getElementById("bar-chart");
+var chartData = [12, 30, 18, 45];
+var chartEl = document.getElementById("bar-chart");
 
-chartEl.innerHTML = chartData.map(value =>
-  `<div class="bg-blue-500 w-6" style="height:${value * 2}px"></div>`
-).join("");
+var html = "";
+for (var i = 0; i < chartData.length; i++) {
+  var height = chartData[i] * 2;
+  html += '<div class="bg-blue-500 w-6" style="height:' + height + 'px"></div>';
+}
+chartEl.innerHTML = html;
 </script>
 
 ---
 
 % ui, calendar, js
 
-# calendar (interactive)
+# calendar
 <div class="w-72 bg-white p-4 rounded shadow">
   <div class="flex justify-between mb-2">
     <button onclick="prevMonth()">←</button>
@@ -198,30 +100,30 @@ chartEl.innerHTML = chartData.map(value =>
 </div>
 
 <script>
-let calendarDate = new Date();
+var calendarDate = new Date();
 
 function renderCalendar() {
-  const grid = document.getElementById("calendar-grid");
-  const label = document.getElementById("calendar-month");
+  var grid = document.getElementById("calendar-grid");
+  var label = document.getElementById("calendar-month");
   grid.innerHTML = "";
 
-  const year = calendarDate.getFullYear();
-  const month = calendarDate.getMonth();
+  var year = calendarDate.getFullYear();
+  var month = calendarDate.getMonth();
 
   label.textContent = calendarDate.toLocaleString("default", {
     month: "long",
     year: "numeric"
   });
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const totalDays = new Date(year, month + 1, 0).getDate();
+  var firstDay = new Date(year, month, 1).getDay();
+  var totalDays = new Date(year, month + 1, 0).getDate();
 
-  for (let i = 0; i < firstDay; i++) {
+  for (var i = 0; i < firstDay; i++) {
     grid.innerHTML += "<div></div>";
   }
 
-  for (let day = 1; day <= totalDays; day++) {
-    grid.innerHTML += `<div class="p-1 rounded hover:bg-blue-100 cursor-pointer">${day}</div>`;
+  for (var day = 1; day <= totalDays; day++) {
+    grid.innerHTML += '<div class="p-1 rounded hover:bg-blue-100 cursor-pointer">' + day + '</div>';
   }
 }
 
@@ -242,28 +144,33 @@ renderCalendar();
 
 % ui, combobox, js
 
-# combobox (filter)
+# combobox
 <div class="w-64">
   <input id="combo-input" class="w-full border px-3 py-2 rounded" placeholder="Search fruit">
   <div id="combo-list" class="border rounded mt-1"></div>
 </div>
 
 <script>
-const comboItems = ["Apple", "Banana", "Orange"];
-const comboList = document.getElementById("combo-list");
+var comboItems = ["Apple", "Banana", "Orange"];
+var comboList = document.getElementById("combo-list");
 
 document.getElementById("combo-input").oninput = function (e) {
-  const value = e.target.value.toLowerCase();
-  comboList.innerHTML = comboItems
-    .filter(item => item.toLowerCase().includes(value))
-    .map(item => `<div class="px-3 py-2 hover:bg-gray-100">${item}</div>`)
-    .join("");
+  var value = e.target.value.toLowerCase();
+  var html = "";
+
+  for (var i = 0; i < comboItems.length; i++) {
+    if (comboItems[i].toLowerCase().indexOf(value) !== -1) {
+      html += '<div class="px-3 py-2 hover:bg-gray-100">' + comboItems[i] + '</div>';
+    }
+  }
+
+  comboList.innerHTML = html;
 };
 </script>
 
 ---
 
-% ui, loading, spinner, tailwind
+% ui, spinner, tailwind
 
 # spinner
 <div class="flex justify-center items-center h-32">
@@ -274,7 +181,7 @@ document.getElementById("combo-input").oninput = function (e) {
 
 % ui, skeleton, tailwind
 
-# skeleton loader
+# skeleton
 <div class="space-y-2">
   <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
   <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
