@@ -1,170 +1,176 @@
-% ui, button, tailwind
+% ui, calendar, date, interactive
 
-# button variants
-<button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Primary</button>
-<button class="px-4 py-2 border rounded hover:bg-gray-100">Outline</button>
-<button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Destructive</button>
-
----
-
-% ui, input, form, tailwind
-
-# input
-<input class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" />
-
-# textarea
-<textarea class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500"></textarea>
-
-# label
-<label class="text-sm font-medium">Label</label>
-
----
-
-% ui, checkbox, radio, switch, tailwind
-
-# checkbox
-<input type="checkbox" class="w-4 h-4 accent-blue-500">
-
-# radio
-<input type="radio" class="accent-blue-500">
-
-# switch
-<label class="inline-flex items-center cursor-pointer">
-  <input type="checkbox" class="sr-only peer">
-  <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-blue-500 relative">
-    <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition peer-checked:translate-x-5"></div>
+# calendar (interactive - minimal js)
+<div class="w-72 bg-white p-4 rounded shadow">
+  <div class="flex justify-between items-center mb-2">
+    <button onclick="prevMonth()" class="px-2">←</button>
+    <div id="month" class="font-semibold"></div>
+    <button onclick="nextMonth()" class="px-2">→</button>
   </div>
-</label>
-
----
-
-% ui, select, tailwind
-
-# select
-<select class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500">
-  <option>Option</option>
-</select>
-
----
-
-% ui, card, tailwind
-
-# card
-<div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-  <h3 class="font-semibold">Title</h3>
-  <p class="text-gray-500 text-sm">Content</p>
+  <div id="calendar" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
 </div>
 
+<script>
+const cal = document.getElementById("calendar");
+const monthLabel = document.getElementById("month");
+let date = new Date();
+
+function render() {
+  cal.innerHTML = "";
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  monthLabel.textContent = date.toLocaleString("default", { month: "long", year: "numeric" });
+
+  const first = new Date(year, month, 1).getDay();
+  const days = new Date(year, month+1, 0).getDate();
+
+  for (let i=0;i<first;i++) cal.innerHTML += `<div></div>`;
+  for (let d=1; d<=days; d++) {
+    cal.innerHTML += `<div class="p-1 rounded hover:bg-blue-100 cursor-pointer">${d}</div>`;
+  }
+}
+function prevMonth(){ date.setMonth(date.getMonth()-1); render(); }
+function nextMonth(){ date.setMonth(date.getMonth()+1); render(); }
+render();
+</script>
+
 ---
 
-% ui, badge, tailwind
+% ui, chart, tailwind, js
 
-# badge
-<span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">Badge</span>
+# bar chart (dynamic)
+<div class="flex items-end gap-2 h-40" id="chart"></div>
+
+<script>
+const data = [10, 30, 20, 50];
+const chart = document.getElementById("chart");
+chart.innerHTML = data.map(v =>
+  `<div class="bg-blue-500 w-6" style="height:${v*2}px"></div>`
+).join("");
+</script>
 
 ---
 
-% ui, alert, tailwind
+% ui, data-table, tailwind, js
 
-# alert
-<div class="px-4 py-2 rounded bg-green-100 text-green-700">Success</div>
-
----
-
-% ui, table, tailwind
-
-# table
-<table class="w-full text-left border">
-  <thead class="bg-gray-100">
-    <tr><th class="p-2">Name</th></tr>
+# data table (sort)
+<table class="w-full border" id="table">
+  <thead class="bg-gray-100 cursor-pointer">
+    <tr>
+      <th class="p-2" onclick="sortTable()">Name ↑↓</th>
+    </tr>
   </thead>
   <tbody>
-    <tr class="border-t hover:bg-gray-50"><td class="p-2">John</td></tr>
+    <tr><td class="p-2">John</td></tr>
+    <tr><td class="p-2">Alice</td></tr>
   </tbody>
 </table>
 
+<script>
+function sortTable() {
+  const tbody = document.querySelector("#table tbody");
+  const rows = [...tbody.rows];
+  rows.sort((a,b)=>a.innerText.localeCompare(b.innerText));
+  rows.forEach(r=>tbody.appendChild(r));
+}
+</script>
+
 ---
 
-% ui, pagination, tailwind
+% ui, combobox, autocomplete, js
 
-# pagination
-<div class="flex gap-2 justify-center">
-  <button class="px-3 py-1 border rounded">Prev</button>
-  <button class="px-3 py-1 border bg-gray-200 rounded">1</button>
+# combobox (filter)
+<div class="w-64">
+  <input id="search" class="w-full border px-3 py-2 rounded" placeholder="Search...">
+  <div id="list" class="border rounded mt-1"></div>
+</div>
+
+<script>
+const items = ["Apple","Banana","Orange"];
+const list = document.getElementById("list");
+
+document.getElementById("search").oninput = e => {
+  list.innerHTML = items
+    .filter(i=>i.toLowerCase().includes(e.target.value.toLowerCase()))
+    .map(i=>`<div class="px-3 py-2 hover:bg-gray-100">${i}</div>`).join("");
+};
+</script>
+
+---
+
+% ui, command, palette, js
+
+# command palette
+<input id="cmd" placeholder="Type..." class="border px-3 py-2 w-full">
+
+<div id="cmd-list" class="border mt-2"></div>
+
+<script>
+const commands = ["Open Dashboard","Logout"];
+const cmdList = document.getElementById("cmd-list");
+
+cmd.oninput = e => {
+  cmdList.innerHTML = commands
+    .filter(c=>c.toLowerCase().includes(e.target.value.toLowerCase()))
+    .map(c=>`<div class="px-3 py-2 hover:bg-gray-100">${c}</div>`).join("");
+};
+</script>
+
+---
+
+% ui, carousel, tailwind, css
+
+# carousel (scroll snap)
+<div class="flex overflow-x-auto snap-x gap-4">
+  <div class="min-w-[200px] snap-start bg-white p-4 rounded shadow">1</div>
+  <div class="min-w-[200px] snap-start bg-white p-4 rounded shadow">2</div>
 </div>
 
 ---
 
-% ui, modal, dialog, tailwind, no-js
+% ui, modal, tailwind, css
 
-# dialog (checkbox)
-<input type="checkbox" id="dialog" class="hidden peer">
+# modal (no js)
+<input type="checkbox" id="modal" class="hidden peer">
 
-<label for="dialog" class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
+<label for="modal" class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">
   Open
 </label>
 
 <div class="fixed inset-0 bg-black/50 hidden peer-checked:flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow w-full max-w-md">
-    Dialog
-    <label for="dialog" class="block mt-4 border px-2 py-1 rounded cursor-pointer">Close</label>
+  <div class="bg-white p-6 rounded shadow">
+    Modal
+    <label for="modal" class="block mt-4 border px-2 py-1 cursor-pointer">Close</label>
   </div>
 </div>
 
 ---
 
-% ui, dropdown, menu, tailwind, no-js
+% ui, toast, tailwind, js
 
-# dropdown menu
-<div tabindex="0" class="relative group inline-block">
-  <button class="px-4 py-2 bg-gray-200 rounded">Menu</button>
-
-  <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow
-              opacity-0 scale-95 pointer-events-none
-              group-focus-within:opacity-100 group-focus-within:scale-100
-              group-focus-within:pointer-events-auto transition">
-    <div class="px-4 py-2 hover:bg-gray-100">Item</div>
-  </div>
+# toast auto-dismiss
+<div id="toast" class="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded hidden">
+  Saved!
 </div>
+
+<script>
+function showToast(){
+  const t = document.getElementById("toast");
+  t.classList.remove("hidden");
+  setTimeout(()=>t.classList.add("hidden"),2000);
+}
+</script>
 
 ---
 
-% ui, popover, tailwind, no-js
-
-# popover (focus)
-<div tabindex="0" class="relative inline-block">
-  <button class="px-3 py-1 bg-gray-200 rounded">Open</button>
-
-  <div class="absolute mt-2 hidden focus-within:block bg-white border p-2 rounded shadow">
-    Popover content
-  </div>
-</div>
-
----
-
-% ui, tooltip, tailwind
-
-# tooltip
-<div class="relative group inline-block">
-  <button class="px-2 py-1 bg-gray-200 rounded">Hover</button>
-
-  <div class="absolute bottom-full mb-1 hidden group-hover:block text-xs bg-black text-white px-2 py-1 rounded">
-    Tooltip
-  </div>
-</div>
-
----
-
-% ui, tabs, tailwind, no-js
+% ui, tabs, tailwind, css
 
 # tabs
-<input type="radio" name="tab" id="tab1" class="hidden peer/t1" checked>
-<input type="radio" name="tab" id="tab2" class="hidden peer/t2">
+<input type="radio" name="tab" id="t1" class="hidden peer/t1" checked>
+<input type="radio" name="tab" id="t2" class="hidden peer/t2">
 
-<div class="flex gap-4 border-b">
-  <label for="tab1" class="cursor-pointer">Tab1</label>
-  <label for="tab2" class="cursor-pointer">Tab2</label>
-</div>
+<label for="t1">Tab1</label>
+<label for="t2">Tab2</label>
 
 <div>
   <div class="peer-checked/t1:block hidden">Content1</div>
@@ -173,91 +179,41 @@
 
 ---
 
-% ui, accordion, collapsible, tailwind, no-js
+% ui, accordion, tailwind, css
 
 # accordion
 <input type="checkbox" id="acc" class="hidden peer">
-
-<label for="acc" class="block px-4 py-2 bg-gray-100 cursor-pointer">
-  Title
-</label>
-
-<div class="max-h-0 overflow-hidden peer-checked:max-h-40 transition-all px-4">
+<label for="acc" class="block bg-gray-100 p-2 cursor-pointer">Title</label>
+<div class="max-h-0 overflow-hidden peer-checked:max-h-40 transition-all p-2">
   Content
 </div>
 
 ---
 
-% ui, navigation, breadcrumb, tailwind
+% ui, dropdown, tailwind, css
 
-# breadcrumb
-<nav class="text-sm text-gray-500 flex gap-2">
-  <span>Home</span> / <span>Dashboard</span>
-</nav>
+# dropdown
+<div tabindex="0" class="relative group">
+  <button class="px-3 py-2 bg-gray-200 rounded">Menu</button>
 
----
-
-% ui, avatar, tailwind
-
-# avatar
-<div class="w-8 h-8 rounded-full bg-gray-300"></div>
+  <div class="absolute mt-2 bg-white border rounded shadow hidden
+              group-focus-within:block">
+    <div class="px-3 py-2 hover:bg-gray-100">Item</div>
+  </div>
+</div>
 
 ---
 
-% ui, skeleton, loading, tailwind
-
-# skeleton
-<div class="h-4 bg-gray-200 rounded animate-pulse"></div>
-
-# spinner
-<div class="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-
----
-
-% ui, drawer, sheet, tailwind, no-js
+% ui, drawer, tailwind, css
 
 # drawer
 <input type="checkbox" id="drawer" class="hidden peer">
 
-<label for="drawer" class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">
-  Open
+<label for="drawer" class="px-3 py-2 bg-blue-500 text-white cursor-pointer">
+  Toggle
 </label>
 
 <div class="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white
             -translate-x-full peer-checked:translate-x-0 transition">
   Sidebar
-</div>
-
----
-
-% ui, progress, tailwind
-
-# progress bar
-<div class="w-full bg-gray-200 rounded h-2">
-  <div class="bg-blue-500 h-2 rounded w-1/2"></div>
-</div>
-
----
-
-% ui, separator, tailwind
-
-# separator
-<hr class="border-gray-200">
-
----
-
-% ui, typography, tailwind
-
-# typography
-<h1 class="text-2xl font-bold">Heading</h1>
-<p class="text-gray-500">Paragraph</p>
-
----
-
-% ui, layout, sidebar, dashboard, tailwind
-
-# sidebar layout
-<div class="flex h-screen">
-  <aside class="w-64 bg-gray-900 text-white"></aside>
-  <main class="flex-1 p-4"></main>
 </div>
