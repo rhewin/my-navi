@@ -1,213 +1,49 @@
-% ui, layout, app-shell, tailwind
+% ui, button, tailwind
 
-# app shell (sidebar + navbar)
-<div class="flex h-screen bg-gray-100">
-  <aside class="w-64 bg-gray-900 text-white flex flex-col">
-    <div class="p-4 font-bold text-lg">App</div>
-    <nav class="flex-1 px-2 space-y-1">
-      <a class="block px-3 py-2 rounded hover:bg-gray-800">Dashboard</a>
-      <a class="block px-3 py-2 rounded hover:bg-gray-800">Users</a>
-    </nav>
-  </aside>
-
-  <div class="flex-1 flex flex-col">
-    <header class="flex justify-between items-center px-6 py-3 bg-white shadow">
-      <span class="font-semibold">Dashboard</span>
-      <button class="px-3 py-1 bg-blue-500 text-white rounded">Logout</button>
-    </header>
-
-    <main class="p-6 flex-1 overflow-auto">
-      <div class="bg-white p-4 rounded shadow">Content</div>
-    </main>
-  </div>
-</div>
+# button variants
+<button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Primary</button>
+<button class="px-4 py-2 border rounded hover:bg-gray-100">Outline</button>
+<button class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Destructive</button>
 
 ---
 
-% ui, table, data, tailwind
+% ui, input, form, tailwind
 
-# table with hover
-<div class="bg-white p-4 rounded shadow overflow-x-auto">
-  <table class="w-full text-left">
-    <thead class="bg-gray-100">
-      <tr>
-        <th class="p-2">ID</th>
-        <th class="p-2">Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="border-t hover:bg-gray-50">
-        <td class="p-2">1</td>
-        <td class="p-2">John</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+# input
+<input class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+
+# textarea
+<textarea class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500"></textarea>
+
+# label
+<label class="text-sm font-medium">Label</label>
 
 ---
 
-% ui, form, input, tailwind
+% ui, checkbox, radio, switch, tailwind
 
-# form input
-<form class="bg-white p-6 rounded shadow max-w-md space-y-4">
-  <div>
-    <label class="block text-sm font-medium mb-1">Email</label>
-    <input type="email"
-      class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" />
-  </div>
+# checkbox
+<input type="checkbox" class="w-4 h-4 accent-blue-500">
 
-  <button class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
-    Submit
-  </button>
-</form>
+# radio
+<input type="radio" class="accent-blue-500">
 
----
-
-% ui, modal, tailwind, no-js
-
-# modal (checkbox hack)
-<input type="checkbox" id="modal-toggle" class="hidden peer">
-
-<label for="modal-toggle"
-  class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
-  Open Modal
-</label>
-
-<div class="fixed inset-0 bg-black/50 hidden peer-checked:flex items-center justify-center">
-  <div class="bg-white p-6 rounded shadow w-full max-w-md">
-    <h2 class="font-bold mb-2">Modal</h2>
-    <p class="mb-4">Content</p>
-
-    <label for="modal-toggle"
-      class="px-3 py-1 border rounded cursor-pointer">
-      Close
-    </label>
-  </div>
-</div>
-
----
-
-% ui, dropdown, tailwind, no-js
-
-# dropdown (focus-within)
-<div tabindex="0" class="relative inline-block group">
-  <button class="px-4 py-2 bg-gray-200 rounded">
-    Menu
-  </button>
-
-  <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow
-              opacity-0 scale-95 pointer-events-none
-              group-focus-within:opacity-100
-              group-focus-within:scale-100
-              group-focus-within:pointer-events-auto
-              transition">
-    <div class="px-4 py-2 hover:bg-gray-100">Profile</div>
-    <div class="px-4 py-2 hover:bg-gray-100">Logout</div>
-  </div>
-</div>
-
----
-
-% ui, tabs, tailwind, no-js
-
-# tabs (radio)
-<div>
-  <input type="radio" name="tab" id="t1" class="hidden peer/t1" checked>
-  <input type="radio" name="tab" id="t2" class="hidden peer/t2">
-
-  <div class="flex gap-4 border-b mb-4">
-    <label for="t1" class="cursor-pointer pb-2">Tab 1</label>
-    <label for="t2" class="cursor-pointer pb-2">Tab 2</label>
-  </div>
-
-  <div>
-    <div class="peer-checked/t1:block hidden">Content 1</div>
-    <div class="peer-checked/t2:block hidden">Content 2</div>
-  </div>
-</div>
-
----
-
-% ui, accordion, tailwind, no-js
-
-# accordion (checkbox)
-<div class="border rounded">
-  <input type="checkbox" id="acc" class="hidden peer">
-
-  <label for="acc"
-    class="block px-4 py-2 bg-gray-100 cursor-pointer">
-    Title
-  </label>
-
-  <div class="max-h-0 overflow-hidden peer-checked:max-h-40 transition-all px-4">
-    Content
-  </div>
-</div>
-
----
-
-% ui, toggle, switch, tailwind
-
-# toggle switch
+# switch
 <label class="inline-flex items-center cursor-pointer">
   <input type="checkbox" class="sr-only peer">
   <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-blue-500 relative">
-    <div class="absolute top-1 left-1 w-3 h-3 bg-white rounded-full
-                transition peer-checked:translate-x-5"></div>
+    <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition peer-checked:translate-x-5"></div>
   </div>
 </label>
 
 ---
 
-% ui, tooltip, tailwind
+% ui, select, tailwind
 
-# tooltip (hover)
-<div class="relative group inline-block">
-  <button class="px-3 py-1 bg-gray-200 rounded">Hover</button>
-
-  <div class="absolute bottom-full mb-2 hidden group-hover:block
-              bg-black text-white text-xs px-2 py-1 rounded">
-    Tooltip
-  </div>
-</div>
-
----
-
-% ui, drawer, sidebar, tailwind, no-js
-
-# drawer (checkbox)
-<input type="checkbox" id="drawer" class="hidden peer">
-
-<label for="drawer"
-  class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">
-  Toggle
-</label>
-
-<div class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white
-            -translate-x-full peer-checked:translate-x-0
-            transition-transform">
-  <div class="p-4">Sidebar</div>
-</div>
-
----
-
-% ui, loading, spinner, tailwind
-
-# spinner
-<div class="flex justify-center items-center h-32">
-  <div class="w-6 h-6 border-2 border-gray-300 border-t-blue-500
-              rounded-full animate-spin"></div>
-</div>
-
----
-
-% ui, skeleton, tailwind
-
-# skeleton
-<div class="space-y-2">
-  <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
-  <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-</div>
+# select
+<select class="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500">
+  <option>Option</option>
+</select>
 
 ---
 
@@ -215,32 +51,213 @@
 
 # card
 <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-  <h3 class="font-semibold mb-2">Title</h3>
+  <h3 class="font-semibold">Title</h3>
   <p class="text-gray-500 text-sm">Content</p>
 </div>
 
 ---
 
+% ui, badge, tailwind
+
+# badge
+<span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">Badge</span>
+
+---
+
 % ui, alert, tailwind
 
-# alert success
-<div class="bg-green-100 text-green-700 px-4 py-2 rounded">
-  Success message
-</div>
+# alert
+<div class="px-4 py-2 rounded bg-green-100 text-green-700">Success</div>
 
-# alert error
-<div class="bg-red-100 text-red-700 px-4 py-2 rounded">
-  Error message
-</div>
+---
+
+% ui, table, tailwind
+
+# table
+<table class="w-full text-left border">
+  <thead class="bg-gray-100">
+    <tr><th class="p-2">Name</th></tr>
+  </thead>
+  <tbody>
+    <tr class="border-t hover:bg-gray-50"><td class="p-2">John</td></tr>
+  </tbody>
+</table>
 
 ---
 
 % ui, pagination, tailwind
 
 # pagination
-<div class="flex justify-center gap-2 mt-4">
-  <button class="px-3 py-1 border rounded hover:bg-gray-100">Prev</button>
-  <button class="px-3 py-1 border rounded bg-gray-200">1</button>
-  <button class="px-3 py-1 border rounded">2</button>
-  <button class="px-3 py-1 border rounded hover:bg-gray-100">Next</button>
+<div class="flex gap-2 justify-center">
+  <button class="px-3 py-1 border rounded">Prev</button>
+  <button class="px-3 py-1 border bg-gray-200 rounded">1</button>
+</div>
+
+---
+
+% ui, modal, dialog, tailwind, no-js
+
+# dialog (checkbox)
+<input type="checkbox" id="dialog" class="hidden peer">
+
+<label for="dialog" class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
+  Open
+</label>
+
+<div class="fixed inset-0 bg-black/50 hidden peer-checked:flex items-center justify-center">
+  <div class="bg-white p-6 rounded shadow w-full max-w-md">
+    Dialog
+    <label for="dialog" class="block mt-4 border px-2 py-1 rounded cursor-pointer">Close</label>
+  </div>
+</div>
+
+---
+
+% ui, dropdown, menu, tailwind, no-js
+
+# dropdown menu
+<div tabindex="0" class="relative group inline-block">
+  <button class="px-4 py-2 bg-gray-200 rounded">Menu</button>
+
+  <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow
+              opacity-0 scale-95 pointer-events-none
+              group-focus-within:opacity-100 group-focus-within:scale-100
+              group-focus-within:pointer-events-auto transition">
+    <div class="px-4 py-2 hover:bg-gray-100">Item</div>
+  </div>
+</div>
+
+---
+
+% ui, popover, tailwind, no-js
+
+# popover (focus)
+<div tabindex="0" class="relative inline-block">
+  <button class="px-3 py-1 bg-gray-200 rounded">Open</button>
+
+  <div class="absolute mt-2 hidden focus-within:block bg-white border p-2 rounded shadow">
+    Popover content
+  </div>
+</div>
+
+---
+
+% ui, tooltip, tailwind
+
+# tooltip
+<div class="relative group inline-block">
+  <button class="px-2 py-1 bg-gray-200 rounded">Hover</button>
+
+  <div class="absolute bottom-full mb-1 hidden group-hover:block text-xs bg-black text-white px-2 py-1 rounded">
+    Tooltip
+  </div>
+</div>
+
+---
+
+% ui, tabs, tailwind, no-js
+
+# tabs
+<input type="radio" name="tab" id="tab1" class="hidden peer/t1" checked>
+<input type="radio" name="tab" id="tab2" class="hidden peer/t2">
+
+<div class="flex gap-4 border-b">
+  <label for="tab1" class="cursor-pointer">Tab1</label>
+  <label for="tab2" class="cursor-pointer">Tab2</label>
+</div>
+
+<div>
+  <div class="peer-checked/t1:block hidden">Content1</div>
+  <div class="peer-checked/t2:block hidden">Content2</div>
+</div>
+
+---
+
+% ui, accordion, collapsible, tailwind, no-js
+
+# accordion
+<input type="checkbox" id="acc" class="hidden peer">
+
+<label for="acc" class="block px-4 py-2 bg-gray-100 cursor-pointer">
+  Title
+</label>
+
+<div class="max-h-0 overflow-hidden peer-checked:max-h-40 transition-all px-4">
+  Content
+</div>
+
+---
+
+% ui, navigation, breadcrumb, tailwind
+
+# breadcrumb
+<nav class="text-sm text-gray-500 flex gap-2">
+  <span>Home</span> / <span>Dashboard</span>
+</nav>
+
+---
+
+% ui, avatar, tailwind
+
+# avatar
+<div class="w-8 h-8 rounded-full bg-gray-300"></div>
+
+---
+
+% ui, skeleton, loading, tailwind
+
+# skeleton
+<div class="h-4 bg-gray-200 rounded animate-pulse"></div>
+
+# spinner
+<div class="w-5 h-5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+
+---
+
+% ui, drawer, sheet, tailwind, no-js
+
+# drawer
+<input type="checkbox" id="drawer" class="hidden peer">
+
+<label for="drawer" class="px-3 py-2 bg-blue-500 text-white rounded cursor-pointer">
+  Open
+</label>
+
+<div class="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white
+            -translate-x-full peer-checked:translate-x-0 transition">
+  Sidebar
+</div>
+
+---
+
+% ui, progress, tailwind
+
+# progress bar
+<div class="w-full bg-gray-200 rounded h-2">
+  <div class="bg-blue-500 h-2 rounded w-1/2"></div>
+</div>
+
+---
+
+% ui, separator, tailwind
+
+# separator
+<hr class="border-gray-200">
+
+---
+
+% ui, typography, tailwind
+
+# typography
+<h1 class="text-2xl font-bold">Heading</h1>
+<p class="text-gray-500">Paragraph</p>
+
+---
+
+% ui, layout, sidebar, dashboard, tailwind
+
+# sidebar layout
+<div class="flex h-screen">
+  <aside class="w-64 bg-gray-900 text-white"></aside>
+  <main class="flex-1 p-4"></main>
 </div>
