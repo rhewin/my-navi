@@ -1,6 +1,7 @@
-% ui, modal, tailwind, css
+% ui, modal, tailwind
 
-# modal (no js)
+# modal (safe)
+cat << 'EOF'
 <input type="checkbox" id="modal-toggle" class="hidden peer">
 
 <label for="modal-toggle"
@@ -19,158 +20,44 @@
     </label>
   </div>
 </div>
-
----
-
-% ui, dropdown, tailwind, css
-
-# dropdown
-<div tabindex="0" class="relative inline-block group">
-  <button class="px-4 py-2 bg-gray-200 rounded">Menu</button>
-
-  <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow hidden group-focus-within:block">
-    <div class="px-4 py-2 hover:bg-gray-100">Profile</div>
-    <div class="px-4 py-2 hover:bg-gray-100">Logout</div>
-  </div>
-</div>
+EOF
 
 ---
 
 % ui, table, tailwind
 
 # table
-<table class="w-full border" id="user-table">
+cat << 'EOF'
+<table class="w-full border">
   <thead class="bg-gray-100">
     <tr>
-      <th class="p-2 cursor-pointer" onclick="sortUserTable()">Name ↑↓</th>
+      <th class="p-2">Name</th>
     </tr>
   </thead>
   <tbody>
-    <tr><td class="p-2">John</td></tr>
-    <tr><td class="p-2">Alice</td></tr>
+    <tr>
+      <td class="p-2">John</td>
+    </tr>
   </tbody>
 </table>
-
-<!-- script -->
-function sortUserTable() {
-  var tbody = document.querySelector("#user-table tbody");
-  var rows = Array.from(tbody.rows);
-  rows.sort(function(a, b){
-    return a.innerText.localeCompare(b.innerText);
-  });
-  rows.forEach(function(row){
-    tbody.appendChild(row);
-  });
-}
-<!-- end script -->
+EOF
 
 ---
 
-% ui, chart, tailwind, js
+% ui, chart, js
 
-# bar chart
+# chart
+cat << 'EOF'
 <div id="bar-chart" class="flex items-end gap-2 h-40"></div>
 
-<!-- script -->
-var chartData = [12, 30, 18, 45];
-var chartEl = document.getElementById("bar-chart");
+<script>
+var data = [10,20,30];
+var el = document.getElementById("bar-chart");
 
 var html = "";
-for (var i = 0; i < chartData.length; i++) {
-  var height = chartData[i] * 2;
-  html += '<div class="bg-blue-500 w-6" style="height:' + height + 'px"></div>';
+for (var i=0;i<data.length;i++){
+  html += '<div class="bg-blue-500 w-6" style="height:'+ (data[i]*2) +'px"></div>';
 }
-chartEl.innerHTML = html;
-<!-- end script -->
-
----
-
-% ui, calendar, js
-
-# calendar
-<div class="w-72 bg-white p-4 rounded shadow">
-  <div class="flex justify-between mb-2">
-    <button onclick="prevMonth()">←</button>
-    <span id="calendar-month"></span>
-    <button onclick="nextMonth()">→</button>
-  </div>
-  <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-</div>
-
-<!-- script -->
-var calendarDate = new Date();
-
-function renderCalendar() {
-  var grid = document.getElementById("calendar-grid");
-  var label = document.getElementById("calendar-month");
-  grid.innerHTML = "";
-
-  var year = calendarDate.getFullYear();
-  var month = calendarDate.getMonth();
-
-  label.textContent = calendarDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric"
-  });
-
-  var firstDay = new Date(year, month, 1).getDay();
-  var totalDays = new Date(year, month + 1, 0).getDate();
-
-  for (var i = 0; i < firstDay; i++) {
-    grid.innerHTML += "<div></div>";
-  }
-
-  for (var day = 1; day <= totalDays; day++) {
-    grid.innerHTML += '<div class="p-1 rounded hover:bg-blue-100 cursor-pointer">' + day + '</div>';
-  }
-}
-
-function prevMonth() {
-  calendarDate.setMonth(calendarDate.getMonth() - 1);
-  renderCalendar();
-}
-
-function nextMonth() {
-  calendarDate.setMonth(calendarDate.getMonth() + 1);
-  renderCalendar();
-}
-
-renderCalendar();
-<!-- end script -->
-
----
-
-% ui, combobox, js
-
-# combobox
-<div class="w-64">
-  <input id="combo-input" class="w-full border px-3 py-2 rounded" placeholder="Search fruit">
-  <div id="combo-list" class="border rounded mt-1"></div>
-</div>
-
-<!-- script -->
-var comboItems = ["Apple", "Banana", "Orange"];
-var comboList = document.getElementById("combo-list");
-
-document.getElementById("combo-input").oninput = function (e) {
-  var value = e.target.value.toLowerCase();
-  var html = "";
-
-  for (var i = 0; i < comboItems.length; i++) {
-    if (comboItems[i].toLowerCase().indexOf(value) !== -1) {
-      html += '<div class="px-3 py-2 hover:bg-gray-100">' + comboItems[i] + '</div>';
-    }
-  }
-
-  comboList.innerHTML = html;
-};
-<!-- end script -->
-
----
-
-% ui, spinner, tailwind
-
-# spinner
-<div class="flex justify-center items-center h-32">
-  <div class="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-</div>
+el.innerHTML = html;
+</script>
+EOF
