@@ -26,9 +26,7 @@
 
 # dropdown
 <div tabindex="0" class="relative inline-block group">
-  <button class="px-4 py-2 bg-gray-200 rounded">
-    Menu
-  </button>
+  <button class="px-4 py-2 bg-gray-200 rounded">Menu</button>
 
   <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow hidden group-focus-within:block">
     <div class="px-4 py-2 hover:bg-gray-100">Profile</div>
@@ -53,7 +51,7 @@
   </tbody>
 </table>
 
-<script>
+<!-- script -->
 function sortUserTable() {
   var tbody = document.querySelector("#user-table tbody");
   var rows = Array.from(tbody.rows);
@@ -64,7 +62,7 @@ function sortUserTable() {
     tbody.appendChild(row);
   });
 }
-</script>
+<!-- end script -->
 
 ---
 
@@ -73,7 +71,7 @@ function sortUserTable() {
 # bar chart
 <div id="bar-chart" class="flex items-end gap-2 h-40"></div>
 
-<script>
+<!-- script -->
 var chartData = [12, 30, 18, 45];
 var chartEl = document.getElementById("bar-chart");
 
@@ -83,7 +81,7 @@ for (var i = 0; i < chartData.length; i++) {
   html += '<div class="bg-blue-500 w-6" style="height:' + height + 'px"></div>';
 }
 chartEl.innerHTML = html;
-</script>
+<!-- end script -->
 
 ---
 
@@ -99,7 +97,7 @@ chartEl.innerHTML = html;
   <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
 </div>
 
-<script>
+<!-- script -->
 var calendarDate = new Date();
 
 function renderCalendar() {
@@ -138,7 +136,7 @@ function nextMonth() {
 }
 
 renderCalendar();
-</script>
+<!-- end script -->
 
 ---
 
@@ -150,7 +148,7 @@ renderCalendar();
   <div id="combo-list" class="border rounded mt-1"></div>
 </div>
 
-<script>
+<!-- script -->
 var comboItems = ["Apple", "Banana", "Orange"];
 var comboList = document.getElementById("combo-list");
 
@@ -166,7 +164,7 @@ document.getElementById("combo-input").oninput = function (e) {
 
   comboList.innerHTML = html;
 };
-</script>
+<!-- end script -->
 
 ---
 
@@ -175,14 +173,4 @@ document.getElementById("combo-input").oninput = function (e) {
 # spinner
 <div class="flex justify-center items-center h-32">
   <div class="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-</div>
-
----
-
-% ui, skeleton, tailwind
-
-# skeleton
-<div class="space-y-2">
-  <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
-  <div class="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
 </div>
